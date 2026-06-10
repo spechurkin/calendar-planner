@@ -59,7 +59,6 @@ if (!existingIds.includes(stored)) {
 }
 
 if (selectedUserId) {
-
     const active =
         document.querySelector(
             `.selectable-user[data-user-id="${selectedUserId}"]`
@@ -67,5 +66,4 @@ if (selectedUserId) {
     if (active) {
         active.classList.add("active-user");
     }
-
 }

@@ -2,14 +2,16 @@ package me.proj.controllers;
 
 import me.proj.services.CalendarService;
 import me.proj.services.UserService;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.Locale;
-
-import java.time.LocalDate;
 
 @Controller
 public class PageController {
@@ -31,6 +33,7 @@ public class PageController {
       Integer year,
       Model model
   ) {
+    Locale locale = LocaleContextHolder.getLocale();
 
     LocalDate now =
         LocalDate.now();
@@ -52,6 +55,11 @@ public class PageController {
     YearMonth next =
         current.plusMonths(1);
 
+    String monthName = StringUtils.capitalize(
+        current.getMonth()
+            .getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
+    );
+
     model.addAttribute(
         "month",
         current.getMonthValue()
@@ -64,11 +72,7 @@ public class PageController {
 
     model.addAttribute(
         "monthName",
-        current.getMonth()
-            .getDisplayName(
-                TextStyle.FULL,
-                Locale.ENGLISH
-            )
+        monthName
     );
 
     model.addAttribute(

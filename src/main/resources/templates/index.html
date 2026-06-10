@@ -92,6 +92,7 @@
 
                     <div class="free-badge"
                          th:if="${day.freeForAll}"
+                         th:text="#{free}"
                     >
                         FREE
                     </div>
@@ -103,12 +104,12 @@
             <section>
                 <h2 th:text="#{users}"></h2>
                 <section>
-                    <h3>Add user</h3>
+                    <h3 th:text="#{add_user}"></h3>
                     <form action="/api/users/create" class="user-card user-create-card" method="post">
                         <div class="user-create-row">
-                            <input name="name" placeholder="User name" required type="text">
+                            <input name="name" required th:placeholder="#{user}" type="text">
                             <input name="color" type="color" value="#3b82f6">
-                            <button type="submit" th:text="#{add}"></button>
+                            <button th:text="#{add}" type="submit"></button>
                         </div>
 
                     </form>
@@ -130,7 +131,7 @@
                                th:value="${user.id}"
                                type="hidden">
                         <button class="delete-btn"
-                                title="Delete user"
+                                th:title="#{delete}"
                                 type="submit">
                             <svg class="delete-icon" viewBox="0 0 24 24">
                                 <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2"
@@ -150,9 +151,7 @@
             </section>
 
             <section>
-                <h2>
-                    Nearest Common Dates
-                </h2>
+                <h2 th:text="#{nfd}"></h2>
                 <div class="common-dates-list">
                     <div class="common-date"
                          th:each="date : ${commonDates}"

@@ -6,10 +6,13 @@ import me.proj.entities.Availability;
 import me.proj.entities.AvailabilityStatus;
 import me.proj.entities.User;
 import me.proj.repos.AvailabilityRepository;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +34,6 @@ public class CalendarService {
       int year,
       int month
   ) {
-
     YearMonth yearMonth =
         YearMonth.of(year, month);
 
@@ -72,7 +74,6 @@ public class CalendarService {
   public boolean isFreeForAll(
       LocalDate date
   ) {
-
     List<User> users =
         userService.findAll();
 
@@ -98,20 +99,21 @@ public class CalendarService {
     return true;
   }
 
-  public List<LocalDate> nearestCommonDates() {
+  public List<String> nearestCommonDates() {
+    List<String> result = new ArrayList<>();
 
-    List<LocalDate> result =
-        new ArrayList<>();
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+            .withLocale(LocaleContextHolder.getLocale());
 
     LocalDate now = LocalDate.now();
 
     for (int i = 0; i < 365; i++) {
 
-      LocalDate date =
-          now.plusDays(i);
+      LocalDate date = now.plusDays(i);
 
       if (isFreeForAll(date)) {
-        result.add(date);
+        result.add(date.format(formatter));
       }
 
       if (result.size() >= 10) {
@@ -125,7 +127,6 @@ public class CalendarService {
   private List<BusyUserDto> busyUsers(
       LocalDate date
   ) {
-
     return repository
         .findAllByDate(date)
         .stream()
