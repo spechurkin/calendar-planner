@@ -26,20 +26,6 @@ public class DataSeeder {
               "#3b82f6"
           )
       );
-
-      repository.save(
-          new User(
-              "Мария",
-              "#ef4444"
-          )
-      );
-
-      repository.save(
-          new User(
-              "Антон",
-              "#22c55e"
-          )
-      );
     };
   }
 }

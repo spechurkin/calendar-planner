@@ -10,23 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 @SpringBootApplication
-public class CalendarPlannerApplication implements WebMvcConfigurer {
-  private final LocaleChangeInterceptor localeChangeInterceptor;
-
-  public CalendarPlannerApplication(LocaleChangeInterceptor localeChangeInterceptor) {
-    this.localeChangeInterceptor = localeChangeInterceptor;
-  }
-
+public class CalendarPlannerApplication {
   public static void main(String[] args) {
     SpringApplication.run(
         CalendarPlannerApplication.class,
         args
     );
-  }
-
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(localeChangeInterceptor);
   }
 
   @Bean
