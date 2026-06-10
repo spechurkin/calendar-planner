@@ -1,19 +1,12 @@
 package me.proj.dtos;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CreateUserRequest {
-  @NotNull
-  private Long projectId;
-
+public class CreateProjectRequest {
   @NotBlank
-  @Size(max = 100)
+  @Size(max = 120)
   private String name;
-
-  @NotBlank
-  private String color;
 }

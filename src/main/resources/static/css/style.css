@@ -347,3 +347,84 @@ body {
     height: 28px;
     display: block;
 }
+.project-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.project-bar h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.eyebrow {
+    margin-bottom: 4px;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.project-select-form select,
+.project-create-form input {
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+}
+
+.project-create-form {
+    display: flex;
+    gap: 8px;
+}
+
+.project-create-form button,
+.delete-project-btn {
+    min-height: 40px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.project-create-form button {
+    background: #3b82f6;
+}
+
+.delete-project-btn {
+    background: #ef4444;
+}
+
+.project-create-form button:hover {
+    background: #2563eb;
+}
+
+.delete-project-btn:hover {
+    background: #dc2626;
+}
+
+.user-create-row select {
+    flex: 1;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+}

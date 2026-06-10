@@ -10,6 +10,9 @@ import java.time.LocalDate;
 public class CreateAvailabilityRequest {
 
   @NotNull
+  private Long projectId;
+
+  @NotNull
   private Long userId;
 
   @NotNull
