@@ -1,42 +1,50 @@
 package me.proj.controllers;
 
+import me.proj.entities.Project;
 import me.proj.services.CalendarService;
+import me.proj.services.ProjectService;
 import me.proj.services.UserService;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
-import java.util.Locale;
 
 @Controller
 public class PageController {
 
   private final UserService userService;
+  private final ProjectService projectService;
   private final CalendarService calendarService;
 
   public PageController(
       UserService userService,
+      ProjectService projectService,
       CalendarService calendarService
   ) {
     this.userService = userService;
+    this.projectService = projectService;
     this.calendarService = calendarService;
   }
 
   @GetMapping("/")
   public String index(
-      Integer month,
-      Integer year,
+      @RequestParam(required = false) Integer month,
+      @RequestParam(required = false) Integer year,
+      @RequestParam(required = false) Long projectId,
       Model model
   ) {
-    Locale locale = LocaleContextHolder.getLocale();
-
     LocalDate now =
         LocalDate.now();
+
+    Project activeProject = projectId == null
+        ? projectService.firstOrCreateDefault()
+        : projectService.getById(projectId);
 
     YearMonth current =
         YearMonth.of(
@@ -96,8 +104,19 @@ public class PageController {
     );
 
     model.addAttribute(
+        "activeProject",
+        activeProject
+    );
+
+    model.addAttribute(
+        "projects",
+        projectService.findAll()
+    );
+
+    model.addAttribute(
         "calendarDays",
         calendarService.buildMonth(
+            activeProject.getId(),
             current.getYear(),
             current.getMonthValue()
         )
@@ -105,12 +124,17 @@ public class PageController {
 
     model.addAttribute(
         "users",
-        userService.findAll()
+        userService.findAllByProject(activeProject.getId())
+    );
+
+    model.addAttribute(
+        "availableUsers",
+        userService.findUsersOutsideProject(activeProject.getId())
     );
 
     model.addAttribute(
         "commonDates",
-        calendarService.nearestCommonDates()
+        calendarService.nearestCommonDates(activeProject.getId())
     );
 
     return "index";
