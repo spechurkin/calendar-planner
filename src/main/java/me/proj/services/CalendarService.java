@@ -69,7 +69,7 @@ public class CalendarService {
               current.getMonthValue()
                   == month,
               isFreeForAll(project, current),
-              busyUsers(project, current)
+              busyUsers(current)
           )
       );
     }
@@ -85,11 +85,9 @@ public class CalendarService {
         userService.findAllByProject(project.getId());
 
     for (User user : users) {
-
       Availability availability =
           repository
-              .findByProjectAndUserAndDate(
-                  project,
+              .findByUserAndDate(
                   user,
                   date
               )
@@ -134,11 +132,11 @@ public class CalendarService {
   }
 
   private List<BusyUserDto> busyUsers(
-      Project project,
       LocalDate date
   ) {
+
     return repository
-        .findAllByProjectAndDate(project, date)
+        .findAllByDate(date)
         .stream()
         .filter(a ->
             a.getStatus()

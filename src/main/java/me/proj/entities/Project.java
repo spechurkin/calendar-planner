@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "project")
 public class Project {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -29,9 +28,6 @@ public class Project {
       inverseJoinColumns = @JoinColumn(name = "user_id")
   )
   private List<User> users = new ArrayList<>();
-
-  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Availability> availabilities = new ArrayList<>();
 
   public Project(String name) {
     this.name = name;
