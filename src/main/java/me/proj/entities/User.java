@@ -1,13 +1,12 @@
 package me.proj.entities;
+
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @Table(name = "app_user")
 public class User {
 
@@ -24,5 +23,8 @@ public class User {
   public User(String name, String color) {
     this.name = name;
     this.color = color;
+  }
+
+  public User() {
   }
 }
