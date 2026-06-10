@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{calendar}">Calendar Planner</title>
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <div class="topbar">
+        <a class="month-nav"
+           th:href="@{/(month=${previousMonth}, year=${previousYear})}">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M15.5 19l-7-7 7-7"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"/>
+            </svg>
+        </a>
+
+        <div class="month-title">
+            <span class="month-name">
+                [[${monthName}]]
+            </span>
+
+            <span class="month-year">
+                [[${year}]]
+            </span>
+        </div>
+
+        <div class="lang-switch">
+            <a href="?lang=en">EN</a>
+            <a href="?lang=ru">RU</a>
+        </div>
+
+        <a class="month-nav"
+           th:href="@{/(month=${nextMonth}, year=${nextYear})}">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M8.5 5l7 7-7 7"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"/>
+            </svg>
+        </a>
+    </div>
+
+    <div class="layout">
+        <section class="calendar">
+            <div class="weekdays">
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+                <div>Sun</div>
+            </div>
+
+            <div class="calendar-grid">
+
+                <div class="calendar-day"
+                     th:classappend="
+                            (${day.currentMonth}
+                                ? ''
+                                : ' muted')
+                            +
+                            (${day.today}
+                                ? ' today'
+                                : '')
+                        "
+                     th:data-date="${day.date}"
+                     th:each="day : ${calendarDays}"
+                >
+
+                    <div class="date-number">
+                        [[${day.date.dayOfMonth}]]
+                    </div>
+
+                    <div class="busy-users">
+                        <div class="busy-user"
+                             th:each="busyUser : ${day.busyUsers}"
+                             th:style="'background:' + ${busyUser.color}"
+                             th:title="${busyUser.name}"
+                        >
+                        </div>
+                    </div>
+
+                    <div class="free-badge"
+                         th:if="${day.freeForAll}"
+                    >
+                        FREE
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="sidebar">
+            <section>
+                <h2 th:text="#{users}"></h2>
+                <section>
+                    <h3>Add user</h3>
+                    <form action="/api/users/create" class="user-card user-create-card" method="post">
+                        <div class="user-create-row">
+                            <input name="name" placeholder="User name" required type="text">
+                            <input name="color" type="color" value="#3b82f6">
+                            <button type="submit" th:text="#{add}"></button>
+                        </div>
+
+                    </form>
+                </section>
+                <div class="user-card selectable-user"
+                     th:data-user-id="${user.id}"
+                     th:each="user : ${users}"
+                     th:style="'border-left: 8px solid ' + ${user.color}"
+                >
+                    <span>
+                        [[${user.name}]]
+                    </span>
+
+                    <form action="/api/users/delete"
+                          class="user-delete-form"
+                          method="post"
+                    >
+                        <input name="id"
+                               th:value="${user.id}"
+                               type="hidden">
+                        <button class="delete-btn"
+                                title="Delete user"
+                                type="submit">
+                            <svg class="delete-icon" viewBox="0 0 24 24">
+                                <path d="M6 7h12M10 11v6M14 11v6M9 7l1-2h4l1 2"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"/>
+                                <path d="M7 7l1 14h8l1-14"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      stroke-width="2"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section>
+                <h2>
+                    Nearest Common Dates
+                </h2>
+                <div class="common-dates-list">
+                    <div class="common-date"
+                         th:each="date : ${commonDates}"
+                    >
+                        [[${date}]]
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </div>
+</div>
+
+<script src="/js/calendar.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    font-family: Arial, sans-serif;
+
+    background: #f3f4f6;
+}
+
+.container {
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+    padding: 24px;
+}
+
+.topbar {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 24px;
+}
+
+.layout {
+    display: grid;
+
+    grid-template-columns:
+            1fr 320px;
+
+    gap: 24px;
+}
+
+.calendar {
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 20px;
+}
+
+.weekdays {
+    display: grid;
+
+    grid-template-columns:
+            repeat(7, 1fr);
+
+    margin-bottom: 12px;
+
+    font-weight: bold;
+}
+
+.calendar-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(7, 1fr);
+
+    gap: 8px;
+}
+
+.calendar-day {
+    min-height: 120px;
+
+    background: #fafafa;
+
+    border-radius: 12px;
+
+    padding: 8px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.calendar-day:hover {
+    background: #f0f0f0;
+}
+
+.calendar-day.muted {
+    opacity: 0.4;
+}
+
+.calendar-day.today {
+    border: 3px solid #3b82f6;
+}
+
+.date-number {
+    font-weight: bold;
+}
+
+.free-badge {
+    margin-top: 12px;
+
+    display: inline-block;
+
+    background: #22c55e;
+
+    color: white;
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+}
+
+.sidebar {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 24px;
+}
+
+.user-create-card {
+    background: white;
+
+    padding: 16px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+.user-create-card input[type="text"] {
+    padding: 10px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 8px;
+}
+
+.user-create-card input[type="color"] {
+    width: 100%;
+
+    height: 40px;
+
+    border: none;
+
+    background: none;
+
+    cursor: pointer;
+}
+
+.user-create-card button {
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #3b82f6;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.user-create-card button:hover {
+    background: #2563eb;
+}
+
+.user-create-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.user-create-row input[type="text"] {
+    flex: 1;
+
+    padding: 10px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 8px;
+}
+
+.user-create-row input[type="color"] {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.user-create-row input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 50%;
+}
+
+.user-create-row input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.user-create-row button {
+    padding: 10px 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #3b82f6;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.user-create-row button:hover {
+    background: #2563eb;
+}
+
+.user-card,
+.common-date {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.user-card {
+    position: relative;
+}
+
+.user-delete-form {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+}
+
+.delete-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #ef4444;
+    padding: 0;
+}
+
+.delete-btn:hover {
+    color: #dc2626;
+}
+
+.delete-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.selectable-user {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.selectable-user:hover {
+    transform: translateY(-2px);
+}
+
+.active-user {
+    outline: 3px solid #3b82f6;
+}
+
+.busy-users {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.busy-user {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+.month-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.month-name {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.month-year {
+    font-size: 24px;
+    color: #6b7280;
+}
+
+.month-nav {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: white;
+    text-decoration: none;
+    color: black;
+    font-size: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: 0.2s;
+}
+
+.month-nav:hover {
+    transform: translateY(-2px);
+    background: #f9fafb;
+}
+
+.nav-icon {
+    width: 28px;
+    height: 28px;
+    display: block;
+}
