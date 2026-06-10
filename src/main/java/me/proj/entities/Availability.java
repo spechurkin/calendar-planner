@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
         @UniqueConstraint(
             name = "ux_availability_user_date",
             columnNames = {
+                "project_id",
                 "user_id",
                 "date"
             }
@@ -24,7 +25,11 @@ public class Availability {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "project_id")
+  private Project project;
+
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
 
@@ -58,6 +63,14 @@ public class Availability {
 
   public Long getId() {
     return id;
+  }
+
+  public Project getProject() {
+    return project;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 
   public User getUser() {

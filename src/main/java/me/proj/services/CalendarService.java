@@ -4,6 +4,7 @@ import me.proj.dtos.BusyUserDto;
 import me.proj.dtos.CalendarDay;
 import me.proj.entities.Availability;
 import me.proj.entities.AvailabilityStatus;
+import me.proj.entities.Project;
 import me.proj.entities.User;
 import me.proj.repos.AvailabilityRepository;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,20 +21,25 @@ import java.util.List;
 public class CalendarService {
 
   private final UserService userService;
+  private final ProjectService projectService;
   private final AvailabilityRepository repository;
 
   public CalendarService(
       UserService userService,
+      ProjectService projectService,
       AvailabilityRepository repository
   ) {
     this.userService = userService;
+    this.projectService = projectService;
     this.repository = repository;
   }
 
   public List<CalendarDay> buildMonth(
+      Long projectId,
       int year,
       int month
   ) {
+    Project project = projectService.getById(projectId);
     YearMonth yearMonth =
         YearMonth.of(year, month);
 
@@ -62,8 +68,8 @@ public class CalendarService {
               current.equals(LocalDate.now()),
               current.getMonthValue()
                   == month,
-              isFreeForAll(current),
-              busyUsers(current)
+              isFreeForAll(project, current),
+              busyUsers(project, current)
           )
       );
     }
@@ -72,16 +78,18 @@ public class CalendarService {
   }
 
   public boolean isFreeForAll(
+      Project project,
       LocalDate date
   ) {
     List<User> users =
-        userService.findAll();
+        userService.findAllByProject(project.getId());
 
     for (User user : users) {
 
       Availability availability =
           repository
-              .findByUserAndDate(
+              .findByProjectAndUserAndDate(
+                  project,
                   user,
                   date
               )
@@ -99,7 +107,8 @@ public class CalendarService {
     return true;
   }
 
-  public List<String> nearestCommonDates() {
+  public List<String> nearestCommonDates(Long projectId) {
+    Project project = projectService.getById(projectId);
     List<String> result = new ArrayList<>();
 
     DateTimeFormatter formatter =
@@ -112,7 +121,7 @@ public class CalendarService {
 
       LocalDate date = now.plusDays(i);
 
-      if (isFreeForAll(date)) {
+      if (isFreeForAll(project, date)) {
         result.add(date.format(formatter));
       }
 
@@ -125,10 +134,11 @@ public class CalendarService {
   }
 
   private List<BusyUserDto> busyUsers(
+      Project project,
       LocalDate date
   ) {
     return repository
-        .findAllByDate(date)
+        .findAllByProjectAndDate(project, date)
         .stream()
         .filter(a ->
             a.getStatus()
