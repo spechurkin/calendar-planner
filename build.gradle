@@ -1,7 +1,7 @@
 plugins {
     id 'java'
 
-    id 'org.springframework.boot' version '3.5.0'
+    id 'org.springframework.boot' version '3.5.14'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -25,17 +25,18 @@ configurations {
 }
 
 dependencies {
-
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot:3.5.14'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.5.14'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.5.14'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.5.14'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.5.14'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:3.5.14'
 
     // SQLite
     implementation 'org.xerial:sqlite-jdbc:3.49.1.0'
 
     // Hibernate SQLite dialect
-    implementation 'org.hibernate.orm:hibernate-community-dialects'
+    implementation 'org.hibernate.orm:hibernate-community-dialects:6.6.15.Final'
 
     // Flyway
     implementation 'org.flywaydb:flyway-core'
