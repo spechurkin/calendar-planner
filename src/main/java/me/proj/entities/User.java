@@ -1,8 +1,12 @@
 package me.proj.entities;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,6 +24,9 @@ public class User {
 
   @Column(nullable = false, length = 32)
   private String color;
+
+  @ManyToMany(mappedBy = "users")
+  private List<Project> projects = new ArrayList<>();
 
   public User(String name, String color) {
     this.name = name;

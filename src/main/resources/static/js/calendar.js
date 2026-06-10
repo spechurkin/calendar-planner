@@ -1,5 +1,11 @@
+const projectId =
+    document.body.dataset.projectId;
+
+const selectedUserStorageKey =
+    `selectedUserId:${projectId}`;
+
 let selectedUserId =
-    localStorage.getItem("selectedUserId");
+    localStorage.getItem(selectedUserStorageKey);
 
 const users =
     document.querySelectorAll(
@@ -14,7 +20,7 @@ users.forEach(user => {
         user.classList.add('active-user');
         selectedUserId = user.dataset.userId;
         localStorage.setItem(
-            "selectedUserId",
+            selectedUserStorageKey,
             selectedUserId
         );
     });
@@ -36,7 +42,7 @@ document
                     day.dataset.date;
 
                 await fetch(
-                    `/api/availability/toggle?userId=${selectedUserId}&date=${date}`,
+                    `/api/availability/toggle?projectId=${projectId}&userId=${selectedUserId}&date=${date}`,
                     {
                         method: 'POST'
                     }
@@ -52,10 +58,11 @@ const existingIds =
         .map(u => u.dataset.userId);
 
 const stored =
-    localStorage.getItem("selectedUserId");
+    localStorage.getItem(selectedUserStorageKey);
 
 if (!existingIds.includes(stored)) {
-    localStorage.removeItem("selectedUserId");
+    localStorage.removeItem(selectedUserStorageKey);
+    selectedUserId = null;
 }
 
 if (selectedUserId) {

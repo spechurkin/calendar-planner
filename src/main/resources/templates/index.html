@@ -5,12 +5,45 @@
     <title th:text="#{calendar}">Calendar Planner</title>
     <link href="/css/style.css" rel="stylesheet">
 </head>
-<body>
+<body th:data-project-id="${activeProject.id}">
 
 <div class="container">
+    <div class="project-bar">
+        <div>
+            <div class="eyebrow" th:text="#{project}">Project</div>
+            <h1 th:text="${activeProject.name}">Project name</h1>
+        </div>
+
+        <div class="project-actions">
+            <form action="/" class="project-select-form" method="get">
+                <input name="month" th:value="${month}" type="hidden">
+                <input name="year" th:value="${year}" type="hidden">
+                <select name="projectId" onchange="this.form.submit()">
+                    <option th:each="project : ${projects}"
+                            th:selected="${project.id.equals(activeProject.id)}"
+                            th:text="${project.name}"
+                            th:value="${project.id}">
+                    </option>
+                </select>
+            </form>
+
+            <form action="/api/projects/create" class="project-create-form" method="post">
+                <input name="name" required th:placeholder="#{project_name}" type="text">
+                <button th:text="#{add_project}" type="submit"></button>
+            </form>
+
+            <form action="/api/projects/delete"
+                  method="post"
+                  th:if="${projects.size() > 1}">
+                <input name="id" th:value="${activeProject.id}" type="hidden">
+                <button class="delete-project-btn" th:text="#{delete_project}" type="submit"></button>
+            </form>
+        </div>
+    </div>
+
     <div class="topbar">
         <a class="month-nav"
-           th:href="@{/(month=${previousMonth}, year=${previousYear})}">
+           th:href="@{/(month=${previousMonth}, year=${previousYear}, projectId=${activeProject.id})}">
             <svg class="nav-icon" viewBox="0 0 24 24">
                 <path d="M15.5 19l-7-7 7-7"
                       fill="none"
@@ -32,12 +65,12 @@
         </div>
 
         <div class="lang-switch">
-            <a href="?lang=en">EN</a>
-            <a href="?lang=ru">RU</a>
+            <a th:href="@{/(month=${month}, year=${year}, projectId=${activeProject.id}, lang='en')}">EN</a>
+            <a th:href="@{/(month=${month}, year=${year}, projectId=${activeProject.id}, lang='ru')}">RU</a>
         </div>
 
         <a class="month-nav"
-           th:href="@{/(month=${nextMonth}, year=${nextYear})}">
+           th:href="@{/(month=${nextMonth}, year=${nextYear}, projectId=${activeProject.id})}">
             <svg class="nav-icon" viewBox="0 0 24 24">
                 <path d="M8.5 5l7 7-7 7"
                       fill="none"
@@ -106,12 +139,30 @@
                 <section>
                     <h3 th:text="#{add_user}"></h3>
                     <form action="/api/users/create" class="user-card user-create-card" method="post">
+                        <input name="projectId" th:value="${activeProject.id}" type="hidden">
                         <div class="user-create-row">
                             <input name="name" required th:placeholder="#{user}" type="text">
                             <input name="color" type="color" value="#3b82f6">
                             <button th:text="#{add}" type="submit"></button>
                         </div>
 
+                    </form>
+
+                    <form action="/api/users/add-to-project"
+                          class="user-card user-create-card"
+                          method="post"
+                          th:if="${!availableUsers.isEmpty()}">
+                        <input name="projectId" th:value="${activeProject.id}" type="hidden">
+                        <div class="user-create-row">
+                            <select name="userId" required>
+                                <option th:each="availableUser : ${availableUsers}"
+                                        th:style="'color:' + ${availableUser.color}"
+                                        th:text="${availableUser.name}"
+                                        th:value="${availableUser.id}">
+                                </option>
+                            </select>
+                            <button th:text="#{add_existing_user}" type="submit"></button>
+                        </div>
                     </form>
                 </section>
                 <div class="user-card selectable-user"
@@ -129,6 +180,9 @@
                     >
                         <input name="id"
                                th:value="${user.id}"
+                               type="hidden">
+                        <input name="projectId"
+                               th:value="${activeProject.id}"
                                type="hidden">
                         <button class="delete-btn"
                                 th:title="#{delete}"

@@ -32,10 +32,12 @@ public class AvailabilityController {
 
   @GetMapping("/common")
   public List<LocalDate> commonDates(
+      @RequestParam Long projectId,
       @RequestParam LocalDate from,
       @RequestParam LocalDate to
   ) {
     return service.findCommonDates(
+        projectId,
         from,
         to
     );
@@ -43,11 +45,13 @@ public class AvailabilityController {
 
   @PostMapping("/toggle")
   public void toggle(
+      @RequestParam Long projectId,
       @RequestParam Long userId,
       @RequestParam LocalDate date
   ) {
 
     service.toggleBusy(
+        projectId,
         userId,
         date
     );

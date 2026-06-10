@@ -23,18 +23,22 @@ public class CalendarController {
 
   @GetMapping
   public List<CalendarDay> month(
+      @RequestParam Long projectId,
       @RequestParam int year,
       @RequestParam int month
   ) {
 
     return service.buildMonth(
+        projectId,
         year,
         month
     );
   }
 
   @GetMapping("/common")
-  public List<String> commonDates() {
-    return service.nearestCommonDates();
+  public List<String> commonDates(
+      @RequestParam Long projectId
+  ) {
+    return service.nearestCommonDates(projectId);
   }
 }
