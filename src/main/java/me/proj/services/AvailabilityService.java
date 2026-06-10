@@ -3,7 +3,6 @@ package me.proj.services;
 import me.proj.dtos.CreateAvailabilityRequest;
 import me.proj.entities.Availability;
 import me.proj.entities.AvailabilityStatus;
-import me.proj.entities.Project;
 import me.proj.entities.User;
 import me.proj.repos.AvailabilityRepository;
 import org.springframework.stereotype.Service;
@@ -16,39 +15,30 @@ import java.util.List;
 public class AvailabilityService {
   private final AvailabilityRepository repository;
   private final UserService userService;
-  private final ProjectService projectService;
 
   public AvailabilityService(
       AvailabilityRepository repository,
-      UserService userService,
-      ProjectService projectService
+      UserService userService
   ) {
     this.repository = repository;
     this.userService = userService;
-    this.projectService = projectService;
   }
 
   public Availability create(
       CreateAvailabilityRequest request
   ) {
 
-    Project project = projectService.getById(
-        request.getProjectId()
-    );
-    User user = userService.getByProjectAndId(
-        request.getProjectId(),
+    User user = userService.getById(
         request.getUserId()
     );
 
     Availability availability = repository
-        .findByProjectAndUserAndDate(
-            project,
+        .findByUserAndDate(
             user,
             request.getDate()
         )
         .orElse(new Availability());
 
-    availability.setProject(project);
     availability.setUser(user);
     availability.setDate(request.getDate());
     availability.setStatus(request.getStatus());
@@ -57,13 +47,11 @@ public class AvailabilityService {
   }
 
   public List<LocalDate> findCommonDates(
-      Long projectId,
       LocalDate from,
       LocalDate to
   ) {
 
-    Project project = projectService.getById(projectId);
-    List<User> users = userService.findAllByProject(projectId);
+    List<User> users = userService.findAll();
 
     List<LocalDate> result = new ArrayList<>();
 
@@ -78,7 +66,7 @@ public class AvailabilityService {
       for (User user : users) {
 
         Availability availability = repository
-            .findByProjectAndUserAndDate(project, user, date)
+            .findByUserAndDate(user, date)
             .orElse(null);
 
         if (
@@ -100,18 +88,20 @@ public class AvailabilityService {
   }
 
   public void toggleBusy(
-      Long projectId,
       Long userId,
       LocalDate date
   ) {
 
-    Project project = projectService.getById(projectId);
-    User user = userService.getByProjectAndId(projectId, userId);
+    User user =
+        userService.getById(userId);
+
+    if (user == null) {
+      return;
+    }
 
     Availability availability =
         repository
-            .findByProjectAndUserAndDate(
-                project,
+            .findByUserAndDate(
                 user,
                 date
             )
@@ -122,7 +112,6 @@ public class AvailabilityService {
       Availability newAvailability =
           new Availability();
 
-      newAvailability.setProject(project);
       newAvailability.setUser(user);
       newAvailability.setDate(date);
       newAvailability.setStatus(

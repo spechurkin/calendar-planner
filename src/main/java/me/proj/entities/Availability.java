@@ -1,18 +1,21 @@
 package me.proj.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 @Table(
     name = "availability",
     uniqueConstraints = {
         @UniqueConstraint(
             name = "ux_availability_user_date",
             columnNames = {
-                "project_id",
                 "user_id",
                 "date"
             }
@@ -20,14 +23,9 @@ import java.time.LocalDateTime;
     }
 )
 public class Availability {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "project_id")
-  private Project project;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
@@ -59,49 +57,5 @@ public class Availability {
   @PreUpdate
   public void preUpdate() {
     updatedAt = LocalDateTime.now();
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public Project getProject() {
-    return project;
-  }
-
-  public void setProject(Project project) {
-    this.project = project;
-  }
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public LocalDate getDate() {
-    return date;
-  }
-
-  public void setDate(LocalDate date) {
-    this.date = date;
-  }
-
-  public AvailabilityStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(AvailabilityStatus status) {
-    this.status = status;
-  }
-
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
   }
 }
