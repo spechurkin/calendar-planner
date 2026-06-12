@@ -142,7 +142,15 @@
                         <input name="projectId" th:value="${activeProject.id}" type="hidden">
                         <div class="user-create-row">
                             <input name="name" required th:placeholder="#{user}" type="text">
-                            <input name="color" type="color" value="#3b82f6">
+                            <input
+                                    name="color"
+                                    type="text"
+                                    value="#3b82f6"
+                                    maxlength="7"
+                                    pattern="^#[0-9A-Fa-f]{6}$"
+                                    placeholder="#RRGGBB"
+                                    class="color-input"
+                            />
                             <button th:text="#{add}" type="submit"></button>
                         </div>
 

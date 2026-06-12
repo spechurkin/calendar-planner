@@ -122,7 +122,7 @@ body {
 .user-create-card {
     background: white;
 
-    padding: 16px;
+    padding: 10px;
 
     border-radius: 12px;
 
@@ -141,18 +141,6 @@ body {
     border: 1px solid #e5e7eb;
 
     border-radius: 8px;
-}
-
-.user-create-card input[type="color"] {
-    width: 100%;
-
-    height: 40px;
-
-    border: none;
-
-    background: none;
-
-    cursor: pointer;
 }
 
 .user-create-card button {
@@ -176,66 +164,38 @@ body {
 }
 
 .user-create-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(110px, 2fr) 80px 85px;
     gap: 8px;
     align-items: center;
 }
 
 .user-create-row input[type="text"] {
-    flex: 1;
-    width: 150px;
+    width: 100%;
+    min-width: 0;
 
-    padding: 10px;
+    padding: 10px 8px;
 
     border: 1px solid #e5e7eb;
     border-radius: 8px;
 }
 
-.user-create-row input[type="color"] {
-    width: 35px;
-    height: 35px;
-    flex: 0 0 35px;
+.user-create-row input[name="color"] {
+    width: 100%;
 
-    padding: 0;
+    padding: 10px 8px;
 
-    border: none;
-    border-radius: 25%;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
 
-    background: none;
-
-    cursor: pointer;
-
-    overflow: hidden;
-
-    -webkit-appearance: none;
-
-    appearance: none;
-}
-
-.user-create-row input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
-    border-radius: 50%;
-}
-
-.user-create-row input[type="color"]::-webkit-color-swatch {
-    border: none;
-    border-radius: 50%;
+    font-family: monospace;
+    text-transform: uppercase;
+    text-align: center;
 }
 
 .user-create-row button {
-    padding: 10px 14px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #3b82f6;
-
-    color: white;
-
-    cursor: pointer;
-
-    transition: 0.2s;
+    width: 100%;
+    padding: 10px 8px;
 }
 
 .user-create-row button:hover {
@@ -422,9 +382,8 @@ body {
 }
 
 .user-create-row select {
-    flex: 1;
     min-width: 0;
-    padding: 10px;
+    padding: 10px 8px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background: white;
