@@ -65,8 +65,8 @@
         </div>
 
         <div class="lang-switch">
-            <a th:href="@{/(month=${month}, year=${year}, projectId=${activeProject.id}, lang='en')}">EN</a>
-            <a th:href="@{/(month=${month}, year=${year}, projectId=${activeProject.id}, lang='ru')}">RU</a>
+            <a th:href="@{/(month=${month}, year=${year}, projectId=${activeProject.id}, lang='en')}" title="English">🇬🇧</a>
+            <a th:href="@{/(month=${month}, year=${year}, projectId=${activeProject.id}, lang='ru')}" title="Русский">🇷🇺</a>
         </div>
 
         <a class="month-nav"
@@ -85,13 +85,13 @@
     <div class="layout">
         <section class="calendar">
             <div class="weekdays">
-                <div>Mon</div>
-                <div>Tue</div>
-                <div>Wed</div>
-                <div>Thu</div>
-                <div>Fri</div>
-                <div>Sat</div>
-                <div>Sun</div>
+                <div th:text="#{mon}"></div>
+                <div th:text="#{tue}"></div>
+                <div th:text="#{wed}"></div>
+                <div th:text="#{thu}"></div>
+                <div th:text="#{fri}"></div>
+                <div th:text="#{sat}"></div>
+                <div th:text="#{sun}"></div>
             </div>
 
             <div class="calendar-grid">

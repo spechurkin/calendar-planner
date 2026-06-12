@@ -325,6 +325,17 @@ body {
     font-size: 28px;
 }
 
+.lang-switch {
+    min-height: 40px;
+    padding: 0 12px;
+    cursor: pointer;
+}
+
+.lang-switch a {
+    font-size: 36px;
+    text-decoration: none;
+}
+
 .eyebrow {
     margin-bottom: 4px;
     color: #6b7280;
