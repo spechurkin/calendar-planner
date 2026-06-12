@@ -18,10 +18,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String name;
 
-    @Column(nullable = false, length = 32, unique = true)
+    @Column(nullable = false, length = 7, unique = true)
     private String color;
 
     @ManyToMany(mappedBy = "users")
