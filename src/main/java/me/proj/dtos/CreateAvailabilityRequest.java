@@ -9,15 +9,15 @@ import java.time.LocalDate;
 @Data
 public class CreateAvailabilityRequest {
 
-  @NotNull
-  private Long projectId;
+    @NotNull
+    private Long projectId;
 
-  @NotNull
-  private Long userId;
+    @NotNull
+    private Long userId;
 
-  @NotNull
-  private LocalDate date;
+    @NotNull
+    private LocalDate date;
 
-  @NotNull
-  private AvailabilityStatus status;
+    @NotNull
+    private AvailabilityStatus status;
 }

@@ -13,43 +13,43 @@ import java.util.List;
 @RequestMapping("/api/availability")
 public class AvailabilityController {
 
-  private final AvailabilityService service;
+    private final AvailabilityService service;
 
-  public AvailabilityController(
-      AvailabilityService service
-  ) {
-    this.service = service;
-  }
+    public AvailabilityController(
+            AvailabilityService service
+    ) {
+        this.service = service;
+    }
 
-  @PostMapping
-  public Availability create(
-      @Valid
-      @RequestBody
-      CreateAvailabilityRequest request
-  ) {
-    return service.create(request);
-  }
+    @PostMapping
+    public Availability create(
+            @Valid
+            @RequestBody
+            CreateAvailabilityRequest request
+    ) {
+        return service.create(request);
+    }
 
-  @GetMapping("/common")
-  public List<LocalDate> commonDates(
-      @RequestParam LocalDate from,
-      @RequestParam LocalDate to
-  ) {
-    return service.findCommonDates(
-        from,
-        to
-    );
-  }
+    @GetMapping("/common")
+    public List<LocalDate> commonDates(
+            @RequestParam LocalDate from,
+            @RequestParam LocalDate to
+    ) {
+        return service.findCommonDates(
+                from,
+                to
+        );
+    }
 
-  @PostMapping("/toggle")
-  public void toggle(
-      @RequestParam Long userId,
-      @RequestParam LocalDate date
-  ) {
+    @PostMapping("/toggle")
+    public void toggle(
+            @RequestParam Long userId,
+            @RequestParam LocalDate date
+    ) {
 
-    service.toggleBusy(
-        userId,
-        date
-    );
-  }
+        service.toggleBusy(
+                userId,
+                date
+        );
+    }
 }

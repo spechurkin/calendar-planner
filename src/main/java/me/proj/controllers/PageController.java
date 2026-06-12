@@ -18,125 +18,125 @@ import java.time.format.TextStyle;
 @Controller
 public class PageController {
 
-  private final UserService userService;
-  private final ProjectService projectService;
-  private final CalendarService calendarService;
+    private final UserService userService;
+    private final ProjectService projectService;
+    private final CalendarService calendarService;
 
-  public PageController(
-      UserService userService,
-      ProjectService projectService,
-      CalendarService calendarService
-  ) {
-    this.userService = userService;
-    this.projectService = projectService;
-    this.calendarService = calendarService;
-  }
+    public PageController(
+            UserService userService,
+            ProjectService projectService,
+            CalendarService calendarService
+    ) {
+        this.userService = userService;
+        this.projectService = projectService;
+        this.calendarService = calendarService;
+    }
 
-  @GetMapping("/")
-  public String index(
-      @RequestParam(required = false) Integer month,
-      @RequestParam(required = false) Integer year,
-      @RequestParam(required = false) Long projectId,
-      Model model
-  ) {
-    LocalDate now =
-        LocalDate.now();
+    @GetMapping("/")
+    public String index(
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Long projectId,
+            Model model
+    ) {
+        LocalDate now =
+                LocalDate.now();
 
-    Project activeProject = projectId == null
-        ? projectService.firstOrCreateDefault()
-        : projectService.getById(projectId);
+        Project activeProject = projectId == null
+                ? projectService.firstOrCreateDefault()
+                : projectService.getById(projectId);
 
-    YearMonth current =
-        YearMonth.of(
-            year != null
-                ? year
-                : now.getYear(),
+        YearMonth current =
+                YearMonth.of(
+                        year != null
+                                ? year
+                                : now.getYear(),
 
-            month != null
-                ? month
-                : now.getMonthValue()
+                        month != null
+                                ? month
+                                : now.getMonthValue()
+                );
+
+        YearMonth previous =
+                current.minusMonths(1);
+
+        YearMonth next =
+                current.plusMonths(1);
+
+        String monthName = StringUtils.capitalize(
+                current.getMonth()
+                        .getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
         );
 
-    YearMonth previous =
-        current.minusMonths(1);
+        model.addAttribute(
+                "month",
+                current.getMonthValue()
+        );
 
-    YearMonth next =
-        current.plusMonths(1);
+        model.addAttribute(
+                "year",
+                current.getYear()
+        );
 
-    String monthName = StringUtils.capitalize(
-        current.getMonth()
-            .getDisplayName(TextStyle.FULL, LocaleContextHolder.getLocale())
-    );
+        model.addAttribute(
+                "monthName",
+                monthName
+        );
 
-    model.addAttribute(
-        "month",
-        current.getMonthValue()
-    );
+        model.addAttribute(
+                "previousMonth",
+                previous.getMonthValue()
+        );
 
-    model.addAttribute(
-        "year",
-        current.getYear()
-    );
+        model.addAttribute(
+                "previousYear",
+                previous.getYear()
+        );
 
-    model.addAttribute(
-        "monthName",
-        monthName
-    );
+        model.addAttribute(
+                "nextMonth",
+                next.getMonthValue()
+        );
 
-    model.addAttribute(
-        "previousMonth",
-        previous.getMonthValue()
-    );
+        model.addAttribute(
+                "nextYear",
+                next.getYear()
+        );
 
-    model.addAttribute(
-        "previousYear",
-        previous.getYear()
-    );
+        model.addAttribute(
+                "activeProject",
+                activeProject
+        );
 
-    model.addAttribute(
-        "nextMonth",
-        next.getMonthValue()
-    );
+        model.addAttribute(
+                "projects",
+                projectService.findAll()
+        );
 
-    model.addAttribute(
-        "nextYear",
-        next.getYear()
-    );
+        model.addAttribute(
+                "calendarDays",
+                calendarService.buildMonth(
+                        activeProject.getId(),
+                        current.getYear(),
+                        current.getMonthValue()
+                )
+        );
 
-    model.addAttribute(
-        "activeProject",
-        activeProject
-    );
+        model.addAttribute(
+                "users",
+                userService.findAllByProject(activeProject.getId())
+        );
 
-    model.addAttribute(
-        "projects",
-        projectService.findAll()
-    );
+        model.addAttribute(
+                "availableUsers",
+                userService.findUsersOutsideProject(activeProject.getId())
+        );
 
-    model.addAttribute(
-        "calendarDays",
-        calendarService.buildMonth(
-            activeProject.getId(),
-            current.getYear(),
-            current.getMonthValue()
-        )
-    );
+        model.addAttribute(
+                "commonDates",
+                calendarService.nearestCommonDates(activeProject.getId())
+        );
 
-    model.addAttribute(
-        "users",
-        userService.findAllByProject(activeProject.getId())
-    );
-
-    model.addAttribute(
-        "availableUsers",
-        userService.findUsersOutsideProject(activeProject.getId())
-    );
-
-    model.addAttribute(
-        "commonDates",
-        calendarService.nearestCommonDates(activeProject.getId())
-    );
-
-    return "index";
-  }
+        return "index";
+    }
 }

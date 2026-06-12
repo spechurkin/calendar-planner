@@ -10,16 +10,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AvailabilityRepository
-    extends JpaRepository<Availability, Long> {
+        extends JpaRepository<Availability, Long> {
 
-  Optional<Availability> findByUserAndDate(
-      User user,
-      LocalDate date
-  );
+    Optional<Availability> findByUserAndDate(
+            User user,
+            LocalDate date
+    );
 
-  List<Availability> findAllByUser(
-      User user
-  );
+    List<Availability> findAllByUser(
+            User user
+    );
 
-  Collection<Availability> findAllByDate(LocalDate date);
+    Collection<Availability> findAllByDate(LocalDate date);
 }

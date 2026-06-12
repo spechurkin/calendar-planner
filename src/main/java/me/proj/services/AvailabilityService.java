@@ -13,116 +13,116 @@ import java.util.List;
 
 @Service
 public class AvailabilityService {
-  private final AvailabilityRepository repository;
-  private final UserService userService;
+    private final AvailabilityRepository repository;
+    private final UserService userService;
 
-  public AvailabilityService(
-      AvailabilityRepository repository,
-      UserService userService
-  ) {
-    this.repository = repository;
-    this.userService = userService;
-  }
+    public AvailabilityService(
+            AvailabilityRepository repository,
+            UserService userService
+    ) {
+        this.repository = repository;
+        this.userService = userService;
+    }
 
-  public Availability create(
-      CreateAvailabilityRequest request
-  ) {
-
-    User user = userService.getById(
-        request.getUserId()
-    );
-
-    Availability availability = repository
-        .findByUserAndDate(
-            user,
-            request.getDate()
-        )
-        .orElse(new Availability());
-
-    availability.setUser(user);
-    availability.setDate(request.getDate());
-    availability.setStatus(request.getStatus());
-
-    return repository.save(availability);
-  }
-
-  public List<LocalDate> findCommonDates(
-      LocalDate from,
-      LocalDate to
-  ) {
-
-    List<User> users = userService.findAll();
-
-    List<LocalDate> result = new ArrayList<>();
-
-    for (
-        LocalDate date = from;
-        !date.isAfter(to);
-        date = date.plusDays(1)
+    public Availability create(
+            CreateAvailabilityRequest request
     ) {
 
-      boolean allFree = true;
-
-      for (User user : users) {
+        User user = userService.getById(
+                request.getUserId()
+        );
 
         Availability availability = repository
-            .findByUserAndDate(user, date)
-            .orElse(null);
+                .findByUserAndDate(
+                        user,
+                        request.getDate()
+                )
+                .orElse(new Availability());
 
-        if (
-            availability != null &&
-                availability.getStatus()
-                    == AvailabilityStatus.BUSY
+        availability.setUser(user);
+        availability.setDate(request.getDate());
+        availability.setStatus(request.getStatus());
+
+        return repository.save(availability);
+    }
+
+    public List<LocalDate> findCommonDates(
+            LocalDate from,
+            LocalDate to
+    ) {
+
+        List<User> users = userService.findAll();
+
+        List<LocalDate> result = new ArrayList<>();
+
+        for (
+                LocalDate date = from;
+                !date.isAfter(to);
+                date = date.plusDays(1)
         ) {
-          allFree = false;
-          break;
+
+            boolean allFree = true;
+
+            for (User user : users) {
+
+                Availability availability = repository
+                        .findByUserAndDate(user, date)
+                        .orElse(null);
+
+                if (
+                        availability != null &&
+                                availability.getStatus()
+                                        == AvailabilityStatus.BUSY
+                ) {
+                    allFree = false;
+                    break;
+                }
+            }
+
+            if (allFree) {
+                result.add(date);
+            }
         }
-      }
 
-      if (allFree) {
-        result.add(date);
-      }
+        return result;
     }
 
-    return result;
-  }
+    public void toggleBusy(
+            Long userId,
+            LocalDate date
+    ) {
 
-  public void toggleBusy(
-      Long userId,
-      LocalDate date
-  ) {
+        User user =
+                userService.getById(userId);
 
-    User user =
-        userService.getById(userId);
+        if (user == null) {
+            return;
+        }
 
-    if (user == null) {
-      return;
+        Availability availability =
+                repository
+                        .findByUserAndDate(
+                                user,
+                                date
+                        )
+                        .orElse(null);
+
+        if (availability == null) {
+
+            Availability newAvailability =
+                    new Availability();
+
+            newAvailability.setUser(user);
+            newAvailability.setDate(date);
+            newAvailability.setStatus(
+                    AvailabilityStatus.BUSY
+            );
+
+            repository.save(newAvailability);
+
+            return;
+        }
+
+        repository.delete(availability);
     }
-
-    Availability availability =
-        repository
-            .findByUserAndDate(
-                user,
-                date
-            )
-            .orElse(null);
-
-    if (availability == null) {
-
-      Availability newAvailability =
-          new Availability();
-
-      newAvailability.setUser(user);
-      newAvailability.setDate(date);
-      newAvailability.setStatus(
-          AvailabilityStatus.BUSY
-      );
-
-      repository.save(newAvailability);
-
-      return;
-    }
-
-    repository.delete(availability);
-  }
 }

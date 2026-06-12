@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class CreateProjectRequest {
-  @NotBlank
-  @Size(max = 120)
-  private String name;
+    @NotBlank
+    @Size(max = 120)
+    private String name;
 }

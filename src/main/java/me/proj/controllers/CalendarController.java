@@ -13,32 +13,32 @@ import java.util.List;
 @RequestMapping("/api/calendar")
 public class CalendarController {
 
-  private final CalendarService service;
+    private final CalendarService service;
 
-  public CalendarController(
-      CalendarService service
-  ) {
-    this.service = service;
-  }
+    public CalendarController(
+            CalendarService service
+    ) {
+        this.service = service;
+    }
 
-  @GetMapping
-  public List<CalendarDay> month(
-      @RequestParam Long projectId,
-      @RequestParam int year,
-      @RequestParam int month
-  ) {
+    @GetMapping
+    public List<CalendarDay> month(
+            @RequestParam Long projectId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
 
-    return service.buildMonth(
-        projectId,
-        year,
-        month
-    );
-  }
+        return service.buildMonth(
+                projectId,
+                year,
+                month
+        );
+    }
 
-  @GetMapping("/common")
-  public List<String> commonDates(
-      @RequestParam Long projectId
-  ) {
-    return service.nearestCommonDates(projectId);
-  }
+    @GetMapping("/common")
+    public List<String> commonDates(
+            @RequestParam Long projectId
+    ) {
+        return service.nearestCommonDates(projectId);
+    }
 }

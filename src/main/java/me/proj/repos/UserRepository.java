@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface UserRepository
-    extends JpaRepository<User, Long> {
+        extends JpaRepository<User, Long> {
 
-  List<User> findDistinctByProjects(Project project);
+    List<User> findDistinctByProjects(Project project);
 
-  boolean existsByIdAndProjects(Long id, Project project);
+    boolean existsByIdAndProjects(Long id, Project project);
 }

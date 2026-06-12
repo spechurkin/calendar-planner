@@ -7,13 +7,13 @@ import lombok.Data;
 
 @Data
 public class CreateUserRequest {
-  @NotNull
-  private Long projectId;
+    @NotNull
+    private Long projectId;
 
-  @NotBlank
-  @Size(max = 100)
-  private String name;
+    @NotBlank
+    @Size(max = 100)
+    private String name;
 
-  @NotBlank
-  private String color;
+    @NotBlank
+    private String color;
 }

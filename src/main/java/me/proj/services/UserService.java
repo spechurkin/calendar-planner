@@ -13,118 +13,118 @@ import java.util.List;
 
 @Service
 public class UserService {
-  private final UserRepository userRepository;
-  private final ProjectRepository projectRepository;
-  private final AvailabilityRepository availabilityRepository;
-  private final ProjectService projectService;
+    private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
+    private final AvailabilityRepository availabilityRepository;
+    private final ProjectService projectService;
 
-  public UserService(
-      UserRepository userRepository,
-      ProjectRepository projectRepository,
-      AvailabilityRepository availabilityRepository,
-      ProjectService projectService
-  ) {
-    this.userRepository = userRepository;
-    this.projectRepository = projectRepository;
-    this.availabilityRepository = availabilityRepository;
-    this.projectService = projectService;
-  }
+    public UserService(
+            UserRepository userRepository,
+            ProjectRepository projectRepository,
+            AvailabilityRepository availabilityRepository,
+            ProjectService projectService
+    ) {
+        this.userRepository = userRepository;
+        this.projectRepository = projectRepository;
+        this.availabilityRepository = availabilityRepository;
+        this.projectService = projectService;
+    }
 
-  @Transactional
-  public User create(CreateUserRequest request) {
-    User user = new User();
+    @Transactional
+    public User create(CreateUserRequest request) {
+        User user = new User();
 
-    user.setName(request.getName());
-    user.setColor(request.getColor());
+        user.setName(request.getName());
+        user.setColor(request.getColor());
 
-    User saved = userRepository.save(user);
-    projectService.addUser(request.getProjectId(), saved.getId());
+        User saved = userRepository.save(user);
+        projectService.addUser(request.getProjectId(), saved.getId());
 
-    return saved;
-  }
+        return saved;
+    }
 
-  public List<User> findAll() {
-    return userRepository.findAll();
-  }
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
 
-  public List<User> findAllByProject(Long projectId) {
-    return userRepository.findDistinctByProjects(
-        projectService.getById(projectId)
-    );
-  }
-
-  public List<User> findUsersOutsideProject(Long projectId) {
-    List<Long> projectUserIds = findAllByProject(projectId)
-        .stream()
-        .map(User::getId)
-        .toList();
-
-    return userRepository.findAll()
-        .stream()
-        .filter(user -> !projectUserIds.contains(user.getId()))
-        .toList();
-  }
-
-  public User getById(Long id) {
-    return userRepository.findById(id)
-        .orElseThrow(() ->
-            new RuntimeException("User not found")
+    public List<User> findAllByProject(Long projectId) {
+        return userRepository.findDistinctByProjects(
+                projectService.getById(projectId)
         );
-  }
-
-  public User getByProjectAndId(Long projectId, Long id) {
-    Project project = projectService.getById(projectId);
-
-    if (!userRepository.existsByIdAndProjects(id, project)) {
-      throw new RuntimeException("User not found in project");
     }
 
-    return getById(id);
-  }
+    public List<User> findUsersOutsideProject(Long projectId) {
+        List<Long> projectUserIds = findAllByProject(projectId)
+                .stream()
+                .map(User::getId)
+                .toList();
 
-  public void update(Long id, CreateUserRequest updated) {
-    User user = getById(id);
-
-    user.setName(updated.getName());
-    user.setColor(updated.getColor());
-
-    userRepository.save(user);
-  }
-
-  @Transactional
-  public void addToProject(Long projectId, Long userId) {
-    projectService.addUser(projectId, userId);
-  }
-
-  @Transactional
-  public void removeFromProject(Long projectId, Long userId) {
-    User user = getByProjectAndId(projectId, userId);
-
-    availabilityRepository.deleteAll(
-        availabilityRepository.findAllByUser(user)
-    );
-
-    projectService.removeUser(projectId, userId);
-  }
-
-  @Transactional
-  public void delete(Long id) {
-    var user =
-        userRepository.findById(id)
-            .orElse(null);
-
-    if (user == null) {
-      return;
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> !projectUserIds.contains(user.getId()))
+                .toList();
     }
 
-    for (Project project : projectRepository.findAll()) {
-      project.getUsers().removeIf(member -> member.getId().equals(id));
+    public User getById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found")
+                );
     }
 
-    availabilityRepository.deleteAll(
-        availabilityRepository.findAllByUser(user)
-    );
+    public User getByProjectAndId(Long projectId, Long id) {
+        Project project = projectService.getById(projectId);
 
-    userRepository.delete(user);
-  }
+        if (!userRepository.existsByIdAndProjects(id, project)) {
+            throw new RuntimeException("User not found in project");
+        }
+
+        return getById(id);
+    }
+
+    public void update(Long id, CreateUserRequest updated) {
+        User user = getById(id);
+
+        user.setName(updated.getName());
+        user.setColor(updated.getColor());
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void addToProject(Long projectId, Long userId) {
+        projectService.addUser(projectId, userId);
+    }
+
+    @Transactional
+    public void removeFromProject(Long projectId, Long userId) {
+        User user = getByProjectAndId(projectId, userId);
+
+        availabilityRepository.deleteAll(
+                availabilityRepository.findAllByUser(user)
+        );
+
+        projectService.removeUser(projectId, userId);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        var user =
+                userRepository.findById(id)
+                        .orElse(null);
+
+        if (user == null) {
+            return;
+        }
+
+        for (Project project : projectRepository.findAll()) {
+            project.getUsers().removeIf(member -> member.getId().equals(id));
+        }
+
+        availabilityRepository.deleteAll(
+                availabilityRepository.findAllByUser(user)
+        );
+
+        userRepository.delete(user);
+    }
 }
