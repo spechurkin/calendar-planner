@@ -12,7 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/api/projects")
 public class ProjectController {
-
     private final ProjectService service;
 
     public ProjectController(ProjectService service) {

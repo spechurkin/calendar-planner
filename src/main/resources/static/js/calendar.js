@@ -29,7 +29,6 @@ users.forEach(user => {
 document
     .querySelectorAll('.calendar-day')
     .forEach(day => {
-
         day.addEventListener(
             'click',
             async () => {

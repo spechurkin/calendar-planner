@@ -17,7 +17,6 @@ import java.time.format.TextStyle;
 
 @Controller
 public class PageController {
-
     private final UserService userService;
     private final ProjectService projectService;
     private final CalendarService calendarService;

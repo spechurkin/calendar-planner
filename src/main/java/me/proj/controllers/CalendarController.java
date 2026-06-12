@@ -12,7 +12,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/calendar")
 public class CalendarController {
-
     private final CalendarService service;
 
     public CalendarController(
@@ -27,7 +26,6 @@ public class CalendarController {
             @RequestParam int year,
             @RequestParam int month
     ) {
-
         return service.buildMonth(
                 projectId,
                 year,

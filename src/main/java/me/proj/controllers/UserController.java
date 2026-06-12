@@ -11,7 +11,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/api/users")
 public class UserController {
-
     private final UserService service;
 
     public UserController(UserService service) {

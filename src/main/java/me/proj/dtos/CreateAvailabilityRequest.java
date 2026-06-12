@@ -8,7 +8,6 @@ import java.time.LocalDate;
 
 @Data
 public class CreateAvailabilityRequest {
-
     @NotNull
     private Long projectId;
 

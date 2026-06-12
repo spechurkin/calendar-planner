@@ -9,13 +9,11 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(
             RuntimeException exception
     ) {
-
         return Map.of(
                 "message",
                 exception.getMessage()

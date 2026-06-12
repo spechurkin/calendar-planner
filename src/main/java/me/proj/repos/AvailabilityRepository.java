@@ -1,6 +1,7 @@
 package me.proj.repos;
 
 import me.proj.entities.Availability;
+import me.proj.entities.Project;
 import me.proj.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,7 +13,8 @@ import java.util.Optional;
 public interface AvailabilityRepository
         extends JpaRepository<Availability, Long> {
 
-    Optional<Availability> findByUserAndDate(
+    Optional<Availability> findByProjectAndUserAndDate(
+            Project project,
             User user,
             LocalDate date
     );
@@ -22,4 +24,6 @@ public interface AvailabilityRepository
     );
 
     Collection<Availability> findAllByDate(LocalDate date);
+
+    Collection<Availability> findAllByDateAndProject(LocalDate date, Project project);
 }

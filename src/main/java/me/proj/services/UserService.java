@@ -31,7 +31,7 @@ public class UserService {
     }
 
     @Transactional
-    public User create(CreateUserRequest request) {
+    public void create(CreateUserRequest request) {
         User user = new User();
 
         user.setName(request.getName());
@@ -39,8 +39,6 @@ public class UserService {
 
         User saved = userRepository.save(user);
         projectService.addUser(request.getProjectId(), saved.getId());
-
-        return saved;
     }
 
     public List<User> findAll() {
