@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{profile}">Profile</title>
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="auth-page">
+
+<div class="auth-card profile-card">
+    <h1 th:text="#{profile}">Profile</h1>
+
+    <p class="auth-message success" th:if="${param.updated}" th:text="#{profile_updated}"></p>
+    <p class="auth-message error" th:if="${error}" th:text="${error}"></p>
+
+    <form class="auth-form" method="post" th:action="@{/profile}" th:object="${profile}">
+        <label>
+            <span th:text="#{user}">Display name</span>
+            <input required th:field="*{name}" type="text">
+        </label>
+
+        <label>
+            <span th:text="#{color}">Color</span>
+            <input class="color-input"
+                   maxlength="7"
+                   pattern="^#[0-9A-Fa-f]{6}$"
+                   placeholder="#RRGGBB"
+                   required
+                   th:field="*{color}"
+                   type="text">
+        </label>
+
+        <label>
+            <span th:text="#{new_password}">New password</span>
+            <input autocomplete="new-password"
+                   minlength="4"
+                   th:field="*{newPassword}"
+                   type="password">
+        </label>
+
+        <button th:text="#{save_profile}" type="submit"></button>
+    </form>
+
+    <p class="auth-footer">
+        <a th:href="@{/}" th:text="#{back_to_calendar}">Back to calendar</a>
+    </p>
+</div>
+
+</body>
+</html>

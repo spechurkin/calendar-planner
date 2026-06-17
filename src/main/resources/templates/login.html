@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{login}">Login</title>
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="auth-page">
+
+<div class="auth-card">
+    <h1 th:text="#{login}">Login</h1>
+
+    <p class="auth-message success" th:if="${param.registered}" th:text="#{registered_success}"></p>
+    <p class="auth-message success" th:if="${param.logout}" th:text="#{logout_success}"></p>
+    <p class="auth-message error" th:if="${param.error}" th:text="#{login_error}"></p>
+
+    <form class="auth-form" method="post" th:action="@{/login}">
+        <label>
+            <span th:text="#{user}">Name</span>
+            <input autocomplete="username" name="username" required type="text">
+        </label>
+
+        <label>
+            <span th:text="#{password}">Password</span>
+            <input autocomplete="current-password" name="password" required type="password">
+        </label>
+
+        <button th:text="#{login}" type="submit"></button>
+    </form>
+
+    <p class="auth-footer">
+        <span th:text="#{no_account}">No account?</span>
+        <a th:href="@{/signup}" th:text="#{signup}">Sign up</a>
+    </p>
+</div>
+
+</body>
+</html>

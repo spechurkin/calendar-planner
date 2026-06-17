@@ -1,13 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title th:text="#{calendar}">Calendar Planner</title>
     <link href="/css/style.css" rel="stylesheet">
 </head>
-<body th:data-project-id="${activeProject.id}">
+<body th:data-current-user-id="${currentUser.id}"
+      th:data-is-project-member="${isProjectMember}"
+      th:data-project-id="${activeProject.id}">
 
 <div class="container">
+    <div class="account-bar">
+        <div class="account-info">
+            <span class="account-label" th:text="#{signed_in_as}">Signed in as</span>
+            <span class="account-name" th:style="'color:' + ${currentUser.color}" th:text="${currentUser.name}"></span>
+        </div>
+        <div class="account-actions">
+            <a class="account-link" th:href="@{/profile}" th:text="#{profile}">Profile</a>
+            <form method="post" th:action="@{/logout}">
+                <button class="logout-btn" th:text="#{logout}" type="submit"></button>
+            </form>
+        </div>
+    </div>
+
     <div class="project-bar">
         <div>
             <div class="eyebrow" th:text="#{project}">Project</div>
@@ -15,7 +30,7 @@
         </div>
 
         <div class="project-actions">
-            <form action="/" class="project-select-form" method="get">
+            <form class="project-select-form" method="get" th:action="@{/}">
                 <input name="month" th:value="${month}" type="hidden">
                 <input name="year" th:value="${year}" type="hidden">
                 <select name="projectId" onchange="this.form.submit()">
@@ -27,18 +42,26 @@
                 </select>
             </form>
 
-            <form action="/api/projects/create" class="project-create-form" method="post">
+            <form class="project-create-form" method="post" th:action="@{/api/projects/create}">
                 <input name="name" required th:placeholder="#{project_name}" type="text">
                 <button th:text="#{add_project}" type="submit"></button>
             </form>
 
-            <form action="/api/projects/delete"
-                  method="post"
+            <form method="post"
+                  th:action="@{/api/projects/delete}"
                   th:if="${projects.size() > 1}">
                 <input name="id" th:value="${activeProject.id}" type="hidden">
                 <button class="delete-project-btn" th:text="#{delete_project}" type="submit"></button>
             </form>
         </div>
+    </div>
+
+    <div class="join-banner" th:if="${!isProjectMember}">
+        <p th:text="#{not_project_member}">You are not a member of this project yet.</p>
+        <form method="post" th:action="@{/api/users/join-project}">
+            <input name="projectId" th:value="${activeProject.id}" type="hidden">
+            <button th:text="#{join_project}" type="submit"></button>
+        </form>
     </div>
 
     <div class="topbar">
@@ -133,32 +156,32 @@
             </div>
         </section>
 
-        <aside class="sidebar">
+        <aside class="sidebar" th:if="${isProjectMember}">
             <section>
                 <h2 th:text="#{users}"></h2>
                 <section>
                     <h3 th:text="#{add_user}"></h3>
-                    <form action="/api/users/create" class="user-card user-create-card" method="post">
+                    <form class="user-card user-create-card" method="post" th:action="@{/api/users/create}">
                         <input name="projectId" th:value="${activeProject.id}" type="hidden">
                         <div class="user-create-row">
                             <input name="name" required th:placeholder="#{user}" type="text">
                             <input
-                                    name="color"
-                                    type="text"
-                                    value="#3b82f6"
+                                    class="color-input"
                                     maxlength="7"
+                                    name="color"
                                     pattern="^#[0-9A-Fa-f]{6}$"
                                     placeholder="#RRGGBB"
-                                    class="color-input"
+                                    type="text"
+                                    value="#3b82f6"
                             />
                             <button th:text="#{add}" type="submit"></button>
                         </div>
 
                     </form>
 
-                    <form action="/api/users/add-to-project"
-                          class="user-card user-create-card"
+                    <form class="user-card user-create-card"
                           method="post"
+                          th:action="@{/api/users/add-to-project}"
                           th:if="${!availableUsers.isEmpty()}">
                         <input name="projectId" th:value="${activeProject.id}" type="hidden">
                         <div class="user-create-row">
@@ -174,17 +197,26 @@
                     </form>
                 </section>
                 <div class="user-card selectable-user"
+                     th:classappend="${user.id.equals(currentUser.id)} ? ' own-user' : ''"
                      th:data-user-id="${user.id}"
                      th:each="user : ${users}"
                      th:style="'border-left: 8px solid ' + ${user.color}"
                 >
                     <span>
                         [[${user.name}]]
+                        <span class="you-badge" th:if="${user.id.equals(currentUser.id)}" th:text="#{you}"></span>
                     </span>
 
-                    <form action="/api/users/delete"
-                          class="user-delete-form"
+                    <a class="edit-profile-link"
+                       th:href="@{/profile}"
+                       th:if="${user.id.equals(currentUser.id)}"
+                       th:text="#{edit_profile}"
+                       th:title="#{edit_profile}"></a>
+
+                    <form class="user-delete-form"
                           method="post"
+                          th:action="@{/api/users/delete}"
+                          th:if="${!user.id.equals(currentUser.id)}"
                     >
                         <input name="id"
                                th:value="${user.id}"

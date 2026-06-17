@@ -1,6 +1,8 @@
 package me.proj.controllers;
 
 import me.proj.entities.Project;
+import me.proj.entities.User;
+import me.proj.security.CurrentUserService;
 import me.proj.services.CalendarService;
 import me.proj.services.ProjectService;
 import me.proj.services.UserService;
@@ -20,15 +22,18 @@ public class PageController {
     private final UserService userService;
     private final ProjectService projectService;
     private final CalendarService calendarService;
+    private final CurrentUserService currentUserService;
 
     public PageController(
             UserService userService,
             ProjectService projectService,
-            CalendarService calendarService
+            CalendarService calendarService,
+            CurrentUserService currentUserService
     ) {
         this.userService = userService;
         this.projectService = projectService;
         this.calendarService = calendarService;
+        this.currentUserService = currentUserService;
     }
 
     @GetMapping("/")
@@ -135,6 +140,15 @@ public class PageController {
                 "commonDates",
                 calendarService.nearestCommonDates(activeProject.getId())
         );
+
+        User currentUser = currentUserService.requireCurrentUser();
+        boolean isProjectMember = userService.isMemberOfProject(
+                currentUser.getId(),
+                activeProject.getId()
+        );
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isProjectMember", isProjectMember);
 
         return "index";
     }

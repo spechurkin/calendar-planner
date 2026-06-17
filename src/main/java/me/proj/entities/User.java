@@ -24,6 +24,9 @@ public class User {
     @Column(nullable = false, length = 7, unique = true)
     private String color;
 
+    @Column
+    private String passwordHash;
+
     @ManyToMany(mappedBy = "users")
     private List<Project> projects = new ArrayList<>();
 

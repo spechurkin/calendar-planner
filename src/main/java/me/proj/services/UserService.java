@@ -1,11 +1,13 @@
 package me.proj.services;
 
 import me.proj.dtos.CreateUserRequest;
+import me.proj.dtos.UpdateProfileRequest;
 import me.proj.entities.Project;
 import me.proj.entities.User;
 import me.proj.repos.AvailabilityRepository;
 import me.proj.repos.ProjectRepository;
 import me.proj.repos.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +19,20 @@ public class UserService {
     private final ProjectRepository projectRepository;
     private final AvailabilityRepository availabilityRepository;
     private final ProjectService projectService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(
             UserRepository userRepository,
             ProjectRepository projectRepository,
             AvailabilityRepository availabilityRepository,
-            ProjectService projectService
+            ProjectService projectService,
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.availabilityRepository = availabilityRepository;
         this.projectService = projectService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -59,8 +64,14 @@ public class UserService {
 
         return userRepository.findAll()
                 .stream()
+                .filter(user -> user.getPasswordHash() != null)
                 .filter(user -> !projectUserIds.contains(user.getId()))
                 .toList();
+    }
+
+    public boolean isMemberOfProject(Long userId, Long projectId) {
+        Project project = projectService.getById(projectId);
+        return userRepository.existsByIdAndProjects(userId, project);
     }
 
     public User getById(Long id) {
@@ -87,6 +98,35 @@ public class UserService {
         user.setColor(updated.getColor());
 
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateProfile(Long userId, UpdateProfileRequest request) {
+        User user = getById(userId);
+
+        if (!user.getName().equals(request.getName())
+                && userRepository.existsByName(request.getName())) {
+            throw new RuntimeException("Display name already taken");
+        }
+
+        if (!user.getColor().equals(request.getColor())
+                && userRepository.existsByColor(request.getColor())) {
+            throw new RuntimeException("Color already taken");
+        }
+
+        user.setName(request.getName());
+        user.setColor(request.getColor());
+
+        if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
+            user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        }
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void joinProject(Long userId, Long projectId) {
+        projectService.addUser(projectId, userId);
     }
 
     @Transactional

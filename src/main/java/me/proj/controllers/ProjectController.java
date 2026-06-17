@@ -1,6 +1,7 @@
 package me.proj.controllers;
 
 import me.proj.dtos.CreateProjectRequest;
+import me.proj.security.CurrentUserService;
 import me.proj.services.ProjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,9 +14,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/api/projects")
 public class ProjectController {
     private final ProjectService service;
+    private final CurrentUserService currentUserService;
 
-    public ProjectController(ProjectService service) {
+    public ProjectController(
+            ProjectService service,
+            CurrentUserService currentUserService
+    ) {
         this.service = service;
+        this.currentUserService = currentUserService;
     }
 
     @PostMapping("/create")
@@ -24,6 +30,7 @@ public class ProjectController {
             RedirectAttributes redirectAttributes
     ) {
         Long projectId = service.create(project).getId();
+        service.addUser(projectId, currentUserService.requireCurrentUser().getId());
         redirectAttributes.addAttribute("projectId", projectId);
         return "redirect:/";
     }

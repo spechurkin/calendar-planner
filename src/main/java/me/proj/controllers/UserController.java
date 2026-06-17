@@ -2,6 +2,7 @@ package me.proj.controllers;
 
 import me.proj.dtos.CreateUserRequest;
 import me.proj.entities.User;
+import me.proj.security.CurrentUserService;
 import me.proj.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,9 +13,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService service;
+    private final CurrentUserService currentUserService;
 
-    public UserController(UserService service) {
+    public UserController(
+            UserService service,
+            CurrentUserService currentUserService
+    ) {
         this.service = service;
+        this.currentUserService = currentUserService;
     }
 
     @GetMapping
@@ -47,6 +53,17 @@ public class UserController {
         return "redirect:/";
     }
 
+    @PostMapping("/join-project")
+    public String joinProject(
+            @RequestParam Long projectId,
+            RedirectAttributes redirectAttributes
+    ) {
+        User currentUser = currentUserService.requireCurrentUser();
+        service.joinProject(currentUser.getId(), projectId);
+        redirectAttributes.addAttribute("projectId", projectId);
+        return "redirect:/";
+    }
+
     @GetMapping("/edit/{id}")
     public void editForm(@PathVariable Long id, Model model) {
         model.addAttribute("user", service.getById(id));
@@ -56,6 +73,12 @@ public class UserController {
     public String update(@PathVariable Long id,
                          @ModelAttribute CreateUserRequest user,
                          RedirectAttributes redirectAttributes) {
+        User currentUser = currentUserService.requireCurrentUser();
+
+        if (!currentUser.getId().equals(id)) {
+            throw new RuntimeException("You can only edit your own profile");
+        }
+
         service.update(id, user);
         redirectAttributes.addAttribute("projectId", user.getProjectId());
         return "redirect:/";
