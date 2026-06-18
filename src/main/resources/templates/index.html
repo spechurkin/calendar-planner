@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title th:text="#{calendar}">Calendar Planner</title>
     <link href="/css/style.css" rel="stylesheet">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body th:data-current-user-id="${currentUser.id}"
       th:data-is-project-member="${isProjectMember}"
@@ -163,25 +165,6 @@
             <section>
                 <h2 th:text="#{users}"></h2>
                 <section th:if="${canManageProjects}">
-                    <h3 th:text="#{add_user}"></h3>
-                    <form class="user-card user-create-card" method="post" th:action="@{/api/users/create}">
-                        <input name="projectId" th:value="${activeProject.id}" type="hidden">
-                        <div class="user-create-row">
-                            <input name="name" required th:placeholder="#{user}" type="text">
-                            <input
-                                    class="color-input"
-                                    maxlength="7"
-                                    name="color"
-                                    pattern="^#[0-9A-Fa-f]{6}$"
-                                    placeholder="#RRGGBB"
-                                    type="text"
-                                    value="#3b82f6"
-                            />
-                            <button th:text="#{add}" type="submit"></button>
-                        </div>
-
-                    </form>
-
                     <form class="user-card user-create-card"
                           method="post"
                           th:action="@{/api/users/add-to-project}"

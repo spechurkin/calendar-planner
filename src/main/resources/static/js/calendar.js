@@ -45,37 +45,45 @@ users.forEach(user => {
     });
 });
 
-if (isProjectMember) {
-    document
-        .querySelectorAll('.calendar-day')
-        .forEach(day => {
-            day.addEventListener(
-                'click',
-                async () => {
-                    selectedUserId = currentUserId;
+document.querySelectorAll('.calendar-day').forEach(day => {
+    day.addEventListener('click', async () => {
+        if (!isProjectMember || !currentUserId) {
+            console.warn('Toggle not allowed');
+            return;
+        }
 
-                    if (!selectedUserId) {
-                        return;
-                    }
+        const date = day.dataset.date;
+        console.log(`🔄 Toggling: ${date}`);
 
-                    const date =
-                        day.dataset.date;
+        try {
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
 
-                    await fetch(
-                        `/api/availability/toggle?projectId=${projectId}&userId=${selectedUserId}&date=${date}`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                'X-XSRF-TOKEN': getCsrfToken()
-                            }
-                        }
-                    );
+            const formData = new FormData();
+            formData.append('projectId', projectId);
+            formData.append('userId', currentUserId);
+            formData.append('date', date);
 
-                    location.reload();
-                }
-            );
-        });
-}
+            const response = await fetch('/api/availability/toggle', {
+                method: 'POST',
+                headers: {
+                    'X-XSRF-TOKEN': csrfToken
+                },
+                body: formData,
+                credentials: 'same-origin'
+            });
+
+            if (response.ok) {
+                console.log('✅ Toggle successful');
+            } else {
+                console.error('❌ Failed:', response.status, await response.text());
+            }
+        } catch (err) {
+            console.error('❌ Error:', err);
+        }
+
+        setTimeout(() => location.reload(), 400);
+    });
+});
 
 const existingIds =
     Array.from(document.querySelectorAll(".selectable-user"))

@@ -38,9 +38,6 @@ dependencies {
     // Hibernate SQLite dialect
     implementation 'org.hibernate.orm:hibernate-community-dialects'
 
-    // Flyway
-    implementation 'org.flywaydb:flyway-core'
-
     // Jackson
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 

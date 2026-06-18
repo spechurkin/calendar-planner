@@ -1,11 +1,11 @@
 package me.proj.services;
 
+import jakarta.transaction.Transactional;
 import me.proj.dtos.BusyUserDto;
 import me.proj.dtos.CalendarDay;
 import me.proj.entities.Availability;
 import me.proj.entities.AvailabilityStatus;
 import me.proj.entities.Project;
-import me.proj.entities.User;
 import me.proj.repos.AvailabilityRepository;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,25 +15,25 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CalendarService {
-
-    private final UserService userService;
     private final ProjectService projectService;
-    private final AvailabilityRepository repository;
+    private final AvailabilityRepository availabilityRepository;
 
     public CalendarService(
-            UserService userService,
             ProjectService projectService,
-            AvailabilityRepository repository
+            AvailabilityRepository availabilityRepository
     ) {
-        this.userService = userService;
         this.projectService = projectService;
-        this.repository = repository;
+        this.availabilityRepository = availabilityRepository;
     }
 
+    @Transactional
     public List<CalendarDay> buildMonth(
             Long projectId,
             int year,
@@ -56,100 +56,74 @@ public class CalendarService {
 
         List<CalendarDay> days =
                 new ArrayList<>();
+        List<LocalDate> allDates = new ArrayList<>();
 
         for (int i = 0; i < 42; i++) {
-
-            LocalDate current =
-                    calendarStart.plusDays(i);
-
-            days.add(
-                    new CalendarDay(
-                            current,
-                            current.equals(LocalDate.now()),
-                            current.getMonthValue()
-                                    == month,
-                            isFreeForAll(project, current),
-                            busyUsers(current, project)
-                    )
-            );
+            allDates.add(calendarStart.plusDays(i));
         }
 
+        List<Availability> allAvailabilities =
+                availabilityRepository.findAllByProjectAndDateIn(project, allDates);
+
+        Map<LocalDate, List<Availability>> availByDate = allAvailabilities.stream()
+                .collect(Collectors.groupingBy(Availability::getDate));
+
+        for (int i = 0; i < 42; i++) {
+            LocalDate current = calendarStart.plusDays(i);
+            List<Availability> dayAvail = availByDate.getOrDefault(current, List.of());
+
+            days.add(new CalendarDay(
+                    current,
+                    current.equals(LocalDate.now()),
+                    current.getMonthValue() == month,
+                    isFreeForAll(dayAvail),
+                    busyUsers(dayAvail)
+            ));
+        }
         return days;
     }
 
-    public boolean isFreeForAll(
-            Project project,
-            LocalDate date
-    ) {
-        List<User> users =
-                userService.findAllByProject(project.getId());
-
-        for (User user : users) {
-            Availability availability =
-                    repository
-                            .findByProjectAndUserAndDate(
-                                    project,
-                                    user,
-                                    date
-                            )
-                            .orElse(null);
-
-            if (
-                    availability != null &&
-                            availability.getStatus()
-                                    == AvailabilityStatus.BUSY
-            ) {
-                return false;
-            }
-        }
-
-        return true;
+    private boolean isFreeForAll(List<Availability> availabilities) {
+        return availabilities.stream()
+                .noneMatch(a -> a.getStatus() == AvailabilityStatus.BUSY);
     }
 
+    @Transactional
     public List<String> nearestCommonDates(Long projectId) {
         Project project = projectService.getById(projectId);
         List<String> result = new ArrayList<>();
 
-        DateTimeFormatter formatter =
-                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-                        .withLocale(LocaleContextHolder.getLocale());
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                .withLocale(LocaleContextHolder.getLocale());
 
         LocalDate now = LocalDate.now();
-
+        List<LocalDate> dates = new ArrayList<>();
         for (int i = 0; i < 365; i++) {
-
-            LocalDate date = now.plusDays(i);
-
-            if (isFreeForAll(project, date)) {
-                result.add(date.format(formatter));
-            }
-
-            if (result.size() >= 10) {
-                break;
-            }
+            dates.add(now.plusDays(i));
         }
 
+        List<Availability> allAvail = availabilityRepository.findAllByProjectAndDateIn(project, dates);
+        Map<LocalDate, List<Availability>> availByDate = allAvail.stream()
+                .collect(Collectors.groupingBy(Availability::getDate));
+
+        for (LocalDate date : dates) {
+            List<Availability> dayAvail = availByDate.getOrDefault(date, Collections.emptyList());
+            if (isFreeForAll(dayAvail)) {
+                result.add(date.format(formatter));
+            }
+            if (result.size() >= 10) break;
+        }
         return result;
     }
 
-    private List<BusyUserDto> busyUsers(
-            LocalDate date,
-            Project project
-    ) {
-        return repository
-                .findAllByDateAndProject(date, project)
-                .stream()
-                .filter(a ->
-                        a.getStatus()
-                                == AvailabilityStatus.BUSY
-                )
-                .map(a ->
-                        new BusyUserDto(
-                                a.getUser().getId(),
-                                a.getUser().getName(),
-                                a.getUser().getColor()
-                        )
-                )
+    private List<BusyUserDto> busyUsers(List<Availability> availabilities) {
+        return availabilities.stream()
+                .filter(a -> a.getStatus() == AvailabilityStatus.BUSY)
+                .map(a -> new BusyUserDto(
+                        a.getUser().getId(),
+                        a.getUser().getName(),
+                        a.getUser().getColor()
+                ))
                 .toList();
     }
 }

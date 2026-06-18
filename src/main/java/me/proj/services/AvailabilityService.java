@@ -1,5 +1,6 @@
 package me.proj.services;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import me.proj.dtos.CreateAvailabilityRequest;
 import me.proj.entities.Availability;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -99,50 +101,40 @@ public class AvailabilityService {
         return result;
     }
 
-    public void toggleBusy(
-            Long projectId,
-            Long userId,
-            LocalDate date
-    ) {
-        Project project = projectService.getById(projectId);
-        User user = userService.getById(userId);
+    @Transactional
+    public void toggleBusy(Long projectId, Long userId, LocalDate date) {
+        log.info("=== TOGGLE START === projectId={}, userId={}, date={}", projectId, userId, date);
 
-        if (project == null) {
-            return;
+        try {
+            Project project = projectService.getById(projectId);
+            User user = userService.getById(userId);
+
+            if (project == null || user == null) {
+                log.error("Project or user not found");
+                return;
+            }
+
+            requireProjectMember(user, project);
+
+            Optional<Availability> existing = repository.findByProjectAndUserAndDate(project, user, date);
+
+            if (existing.isPresent()) {
+                log.info("Deleting BUSY record id={}", existing.get().getId());
+                repository.delete(existing.get());
+            } else {
+                Availability avail = new Availability();
+                avail.setProject(project);
+                avail.setUser(user);
+                avail.setDate(date);
+                avail.setStatus(AvailabilityStatus.BUSY);
+                repository.save(avail);
+                log.info("Created new BUSY record");
+            }
+            log.info("=== TOGGLE SUCCESS ===");
+        } catch (Exception e) {
+            log.error("Toggle failed", e);
+            throw e; // чтобы увидеть ошибку в ответе
         }
-
-        if (user == null) {
-            return;
-        }
-
-        requireProjectMember(user, project);
-
-        Availability availability =
-                repository
-                        .findByProjectAndUserAndDate(
-                                project,
-                                user,
-                                date
-                        )
-                        .orElse(null);
-
-        if (availability == null) {
-            Availability newAvailability =
-                    new Availability();
-
-            newAvailability.setProject(project);
-            newAvailability.setUser(user);
-            newAvailability.setDate(date);
-            newAvailability.setStatus(
-                    AvailabilityStatus.BUSY
-            );
-
-            repository.save(newAvailability);
-
-            return;
-        }
-
-        repository.delete(availability);
     }
 
     private void requireProjectMember(User user, Project project) {

@@ -14,11 +14,8 @@ import java.time.LocalDateTime;
         name = "availability",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "ux_availability_user_date",
-                        columnNames = {
-                                "user_id",
-                                "date"
-                        }
+                        name = "ux_availability_project_user_date",
+                        columnNames = {"project_id", "user_id", "date"}
                 )
         }
 )

@@ -26,4 +26,6 @@ public interface AvailabilityRepository
     Collection<Availability> findAllByDate(LocalDate date);
 
     Collection<Availability> findAllByDateAndProject(LocalDate date, Project project);
+
+    List<Availability> findAllByProjectAndDateIn(Project project, Collection<LocalDate> dates);
 }
