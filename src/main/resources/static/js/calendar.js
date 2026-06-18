@@ -29,6 +29,10 @@ users.forEach(user => {
             return;
         }
 
+        if (user.dataset.userId !== currentUserId) {
+            return;
+        }
+
         users.forEach(u =>
             u.classList.remove('active-user')
         );
@@ -48,6 +52,7 @@ if (isProjectMember) {
             day.addEventListener(
                 'click',
                 async () => {
+                    selectedUserId = currentUserId;
 
                     if (!selectedUserId) {
                         return;
@@ -87,6 +92,9 @@ if (!existingIds.includes(stored)) {
 if (currentUserId && existingIds.includes(currentUserId)) {
     selectedUserId = currentUserId;
     localStorage.setItem(selectedUserStorageKey, currentUserId);
+} else {
+    selectedUserId = null;
+    localStorage.removeItem(selectedUserStorageKey);
 }
 
 if (selectedUserId) {

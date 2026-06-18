@@ -149,6 +149,8 @@ public class PageController {
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("isProjectMember", isProjectMember);
+        model.addAttribute("canManageProjects", currentUser.canManageProjects());
+        model.addAttribute("canManageRoles", currentUser.canManageRoles());
 
         return "index";
     }

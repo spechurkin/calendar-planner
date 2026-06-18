@@ -1,5 +1,6 @@
 package me.proj.services;
 
+import lombok.extern.slf4j.Slf4j;
 import me.proj.dtos.CreateAvailabilityRequest;
 import me.proj.entities.Availability;
 import me.proj.entities.AvailabilityStatus;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class AvailabilityService {
     private final AvailabilityRepository repository;
@@ -38,6 +40,8 @@ public class AvailabilityService {
         User user = userService.getById(
                 request.getUserId()
         );
+
+        requireProjectMember(user, project);
 
         Availability availability = repository
                 .findByProjectAndUserAndDate(
@@ -101,7 +105,6 @@ public class AvailabilityService {
             LocalDate date
     ) {
         Project project = projectService.getById(projectId);
-
         User user = userService.getById(userId);
 
         if (project == null) {
@@ -111,6 +114,8 @@ public class AvailabilityService {
         if (user == null) {
             return;
         }
+
+        requireProjectMember(user, project);
 
         Availability availability =
                 repository
@@ -122,7 +127,6 @@ public class AvailabilityService {
                         .orElse(null);
 
         if (availability == null) {
-
             Availability newAvailability =
                     new Availability();
 
@@ -139,5 +143,11 @@ public class AvailabilityService {
         }
 
         repository.delete(availability);
+    }
+
+    private void requireProjectMember(User user, Project project) {
+        if (!userService.isMemberOfProject(user.getId(), project.getId())) {
+            throw new RuntimeException("User is not a project member");
+        }
     }
 }

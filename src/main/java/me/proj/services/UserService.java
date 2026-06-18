@@ -4,6 +4,7 @@ import me.proj.dtos.CreateUserRequest;
 import me.proj.dtos.UpdateProfileRequest;
 import me.proj.entities.Project;
 import me.proj.entities.User;
+import me.proj.entities.UserRole;
 import me.proj.repos.AvailabilityRepository;
 import me.proj.repos.ProjectRepository;
 import me.proj.repos.UserRepository;
@@ -96,6 +97,19 @@ public class UserService {
 
         user.setName(updated.getName());
         user.setColor(updated.getColor());
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateMasterRole(Long userId, boolean master) {
+        User user = getById(userId);
+
+        if (master) {
+            user.addRole(UserRole.MASTER);
+        } else {
+            user.removeRole(UserRole.MASTER);
+        }
 
         userRepository.save(user);
     }

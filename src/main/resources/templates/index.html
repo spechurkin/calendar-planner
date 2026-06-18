@@ -42,14 +42,17 @@
                 </select>
             </form>
 
-            <form class="project-create-form" method="post" th:action="@{/api/projects/create}">
+            <form class="project-create-form"
+                  method="post"
+                  th:action="@{/api/projects/create}"
+                  th:if="${canManageProjects}">
                 <input name="name" required th:placeholder="#{project_name}" type="text">
                 <button th:text="#{add_project}" type="submit"></button>
             </form>
 
             <form method="post"
                   th:action="@{/api/projects/delete}"
-                  th:if="${projects.size() > 1}">
+                  th:if="${canManageProjects && projects.size() > 1}">
                 <input name="id" th:value="${activeProject.id}" type="hidden">
                 <button class="delete-project-btn" th:text="#{delete_project}" type="submit"></button>
             </form>
@@ -156,10 +159,10 @@
             </div>
         </section>
 
-        <aside class="sidebar" th:if="${isProjectMember}">
+        <aside class="sidebar" th:if="${isProjectMember || canManageProjects}">
             <section>
                 <h2 th:text="#{users}"></h2>
-                <section>
+                <section th:if="${canManageProjects}">
                     <h3 th:text="#{add_user}"></h3>
                     <form class="user-card user-create-card" method="post" th:action="@{/api/users/create}">
                         <input name="projectId" th:value="${activeProject.id}" type="hidden">
@@ -196,8 +199,8 @@
                         </div>
                     </form>
                 </section>
-                <div class="user-card selectable-user"
-                     th:classappend="${user.id.equals(currentUser.id)} ? ' own-user' : ''"
+                <div class="user-card"
+                     th:classappend="${((canManageProjects || user.id.equals(currentUser.id)) ? ' selectable-user' : '') + (user.id.equals(currentUser.id) ? ' own-user' : '')}"
                      th:data-user-id="${user.id}"
                      th:each="user : ${users}"
                      th:style="'border-left: 8px solid ' + ${user.color}"
@@ -206,6 +209,12 @@
                         [[${user.name}]]
                         <span class="you-badge" th:if="${user.id.equals(currentUser.id)}" th:text="#{you}"></span>
                     </span>
+
+                    <div class="role-list">
+                        <span class="role-pill"
+                              th:each="role : ${user.sortedRoles}"
+                              th:text="${role.name().toLowerCase()}"></span>
+                    </div>
 
                     <a class="edit-profile-link"
                        th:href="@{/profile}"
@@ -216,7 +225,7 @@
                     <form class="user-delete-form"
                           method="post"
                           th:action="@{/api/users/delete}"
-                          th:if="${!user.id.equals(currentUser.id)}"
+                          th:if="${canManageProjects && !user.id.equals(currentUser.id)}"
                     >
                         <input name="id"
                                th:value="${user.id}"
@@ -240,6 +249,21 @@
                                       stroke-width="2"/>
                             </svg>
                         </button>
+                    </form>
+
+                    <form class="role-edit-form"
+                          method="post"
+                          th:action="@{/api/users/{id}/roles(id=${user.id})}"
+                          th:if="${canManageRoles}">
+                        <input name="projectId" th:value="${activeProject.id}" type="hidden">
+                        <label>
+                            <input name="master"
+                                   th:checked="${user.master}"
+                                   type="checkbox"
+                                   value="true">
+                            <span th:text="#{master_role}">Master</span>
+                        </label>
+                        <button th:text="#{save_roles}" type="submit"></button>
                     </form>
                 </div>
             </section>

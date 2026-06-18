@@ -214,6 +214,11 @@ body {
     position: relative;
 }
 
+.user-card > span {
+    display: block;
+    padding-right: 40px;
+}
+
 .user-delete-form {
     position: absolute;
 
@@ -582,6 +587,55 @@ body {
 
 .own-user {
     background: #f8fbff;
+}
+
+.role-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    padding-right: 40px;
+}
+
+.role-pill {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.role-edit-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.role-edit-form label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #374151;
+    font-size: 13px;
+}
+
+.role-edit-form button {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    cursor: pointer;
+}
+
+.role-edit-form button:hover {
+    background: #374151;
 }
 
 .edit-profile-link {
