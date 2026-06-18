@@ -23,9 +23,9 @@ public interface AvailabilityRepository
             User user
     );
 
-    Collection<Availability> findAllByDate(LocalDate date);
-
-    Collection<Availability> findAllByDateAndProject(LocalDate date, Project project);
-
     List<Availability> findAllByProjectAndDateIn(Project project, Collection<LocalDate> dates);
+
+    Iterable<? extends Availability> findAllByProjectAndUser(Project project, User user);
+
+    List<Availability> findAllByDateIn(List<LocalDate> dates);
 }

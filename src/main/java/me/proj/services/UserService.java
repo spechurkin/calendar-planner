@@ -150,10 +150,11 @@ public class UserService {
 
     @Transactional
     public void removeFromProject(Long projectId, Long userId) {
+        Project project = projectService.getById(projectId);
         User user = getByProjectAndId(projectId, userId);
 
         availabilityRepository.deleteAll(
-                availabilityRepository.findAllByUser(user)
+                availabilityRepository.findAllByProjectAndUser(project, user)
         );
 
         projectService.removeUser(projectId, userId);

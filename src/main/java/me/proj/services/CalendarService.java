@@ -113,6 +113,7 @@ public class CalendarService {
             }
             if (result.size() >= 10) break;
         }
+
         return result;
     }
 
