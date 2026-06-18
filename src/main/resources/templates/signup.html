@@ -7,6 +7,11 @@
 </head>
 <body class="auth-page">
 
+<div class="lang-switch" style="position: absolute; top: 20px; right: 20px;">
+    <a th:href="@{/signup(lang='en')}" title="English">🇺🇸</a>
+    <a th:href="@{/signup(lang='ru')}" title="Русский">🇷🇺</a>
+</div>
+
 <div class="auth-card">
     <h1 th:text="#{signup}">Sign up</h1>
 
