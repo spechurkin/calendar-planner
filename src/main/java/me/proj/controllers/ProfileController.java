@@ -2,6 +2,7 @@ package me.proj.controllers;
 
 import jakarta.validation.Valid;
 import me.proj.dtos.UpdateProfileRequest;
+import me.proj.entities.User;
 import me.proj.security.CurrentUserService;
 import me.proj.services.UserService;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ProfileController {
@@ -26,33 +28,26 @@ public class ProfileController {
 
     @GetMapping("/profile")
     public String profile(Model model) {
-        model.addAttribute(
-                "profile",
-                UpdateProfileRequest.from(currentUserService.requireCurrentUser())
-        );
+        User currentUser = currentUserService.requireCurrentUser();
+
+        model.addAttribute("user", currentUser);
+        model.addAttribute("title", "Редактирование профиля");
+
         return "profile";
     }
 
     @PostMapping("/profile")
-    public String updateProfile(
-            @Valid @ModelAttribute("profile") UpdateProfileRequest request,
-            BindingResult bindingResult,
-            Model model
-    ) {
-        if (bindingResult.hasErrors()) {
-            return "profile";
-        }
+    public String updateProfile(@ModelAttribute UpdateProfileRequest request,
+                                RedirectAttributes redirectAttributes) {
+        User currentUser = currentUserService.requireCurrentUser();
 
         try {
-            userService.updateProfile(
-                    currentUserService.requireCurrentUser().getId(),
-                    request
-            );
-        } catch (RuntimeException exception) {
-            model.addAttribute("error", exception.getMessage());
-            return "profile";
+            userService.updateProfile(currentUser.getId(), request);
+            redirectAttributes.addFlashAttribute("success", "Профиль успешно обновлён");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
-        return "redirect:/profile?updated";
+        return "redirect:/profile";
     }
 }

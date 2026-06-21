@@ -102,6 +102,28 @@ public class UserService {
     }
 
     @Transactional
+    public void updateProfile(Long userId, UpdateProfileRequest request) {
+        User user = getById(userId);
+
+        if (!user.getName().equals(request.getName()) && userRepository.existsByName(request.getName())) {
+            throw new RuntimeException("Имя уже занято");
+        }
+
+        if (!user.getColor().equals(request.getColor()) && userRepository.existsByColor(request.getColor())) {
+            throw new RuntimeException("Цвет уже занят");
+        }
+
+        user.setName(request.getName());
+        user.setColor(request.getColor());
+
+        if (request.getNewPassword() != null && !request.getNewPassword().trim().isEmpty()) {
+            user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        }
+
+        userRepository.save(user);
+    }
+
+    @Transactional
     public void updateMasterRole(Long userId, boolean master) {
         User user = getById(userId);
 
@@ -109,30 +131,6 @@ public class UserService {
             user.addRole(UserRole.MASTER);
         } else {
             user.removeRole(UserRole.MASTER);
-        }
-
-        userRepository.save(user);
-    }
-
-    @Transactional
-    public void updateProfile(Long userId, UpdateProfileRequest request) {
-        User user = getById(userId);
-
-        if (!user.getName().equals(request.getName())
-                && userRepository.existsByName(request.getName())) {
-            throw new RuntimeException("Display name already taken");
-        }
-
-        if (!user.getColor().equals(request.getColor())
-                && userRepository.existsByColor(request.getColor())) {
-            throw new RuntimeException("Color already taken");
-        }
-
-        user.setName(request.getName());
-        user.setColor(request.getColor());
-
-        if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
-            user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         }
 
         userRepository.save(user);

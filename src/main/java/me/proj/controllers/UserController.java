@@ -1,6 +1,7 @@
 package me.proj.controllers;
 
 import me.proj.dtos.CreateUserRequest;
+import me.proj.dtos.UpdateProfileRequest;
 import me.proj.entities.User;
 import me.proj.security.AuthorizationService;
 import me.proj.security.CurrentUserService;
@@ -67,26 +68,6 @@ public class UserController {
         User currentUser = currentUserService.requireCurrentUser();
         service.joinProject(currentUser.getId(), projectId);
         redirectAttributes.addAttribute("projectId", projectId);
-        return "redirect:/";
-    }
-
-    @GetMapping("/edit/{id}")
-    public void editForm(@PathVariable Long id, Model model) {
-        model.addAttribute("user", service.getById(id));
-    }
-
-    @PostMapping("/edit/{id}")
-    public String update(@PathVariable Long id,
-                         @ModelAttribute CreateUserRequest user,
-                         RedirectAttributes redirectAttributes) {
-        User currentUser = currentUserService.requireCurrentUser();
-
-        if (!currentUser.getId().equals(id)) {
-            throw new RuntimeException("You can only edit your own profile");
-        }
-
-        service.update(id, user);
-        redirectAttributes.addAttribute("projectId", user.getProjectId());
         return "redirect:/";
     }
 

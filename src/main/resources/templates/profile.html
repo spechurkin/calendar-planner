@@ -16,7 +16,7 @@
     <form class="auth-form" method="post" th:action="@{/profile}" th:object="${profile}">
         <label>
             <span th:text="#{user}">Display name</span>
-            <input required th:field="*{name}" type="text">
+            <input required th:field="${user.name}" type="text">
         </label>
 
         <label>
@@ -26,7 +26,7 @@
                    pattern="^#[0-9A-Fa-f]{6}$"
                    placeholder="#RRGGBB"
                    required
-                   th:field="*{color}"
+                   th:field="${user.color}"
                    type="text">
         </label>
 
@@ -34,7 +34,6 @@
             <span th:text="#{new_password}">New password</span>
             <input autocomplete="new-password"
                    minlength="4"
-                   th:field="*{newPassword}"
                    type="password">
         </label>
 
