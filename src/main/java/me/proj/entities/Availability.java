@@ -1,6 +1,7 @@
 package me.proj.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
 @Table(
         name = "availability",
         uniqueConstraints = {
@@ -46,6 +48,15 @@ public class Availability {
     private LocalDateTime updatedAt;
 
     public Availability() {
+    }
+
+    public Availability(Project project, User user, LocalDate date) {
+        this.project = project;
+        this.user = user;
+        this.date = date;
+        this.status = AvailabilityStatus.BUSY;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     @PrePersist

@@ -82,7 +82,6 @@ public class AvailabilityService {
                 Availability availability = repository
                         .findByProjectAndUserAndDate(project, user, date)
                         .orElse(null);
-
                 if (
                         availability != null &&
                                 availability.getStatus()

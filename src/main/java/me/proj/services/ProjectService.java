@@ -1,8 +1,10 @@
 package me.proj.services;
 
 import me.proj.dtos.CreateProjectRequest;
+import me.proj.entities.Availability;
 import me.proj.entities.Project;
 import me.proj.entities.User;
+import me.proj.repos.AvailabilityRepository;
 import me.proj.repos.ProjectRepository;
 import me.proj.repos.UserRepository;
 import org.springframework.stereotype.Service;
@@ -12,45 +14,49 @@ import java.util.List;
 
 @Service
 public class ProjectService {
-    private final ProjectRepository repository;
+    private final ProjectRepository projectRepository;
+    private final AvailabilityRepository availabilityRepository;
     private final UserRepository userRepository;
 
     public ProjectService(
-            ProjectRepository repository,
+            ProjectRepository projectRepository,
+            AvailabilityRepository availabilityRepository,
             UserRepository userRepository
     ) {
-        this.repository = repository;
+        this.projectRepository = projectRepository;
+        this.availabilityRepository = availabilityRepository;
         this.userRepository = userRepository;
     }
 
     public Project create(CreateProjectRequest request) {
         Project project = new Project();
         project.setName(request.getName());
-        return repository.save(project);
+
+        return projectRepository.save(project);
     }
 
     public List<Project> findAll() {
-        return repository.findAll();
+        return projectRepository.findAll();
     }
 
     public Project getById(Long id) {
-        return repository.findById(id)
+        return projectRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Project not found")
                 );
     }
 
     public Project firstOrCreateDefault() {
-        return repository.findAll()
+        return projectRepository.findAll()
                 .stream()
                 .findFirst()
-                .orElseGet(() -> repository.save(new Project("Общее мероприятие")));
+                .orElseGet(() -> projectRepository.save(new Project("Общее мероприятие")));
     }
 
     public void update(Long id, CreateProjectRequest updated) {
         Project project = getById(id);
         project.setName(updated.getName());
-        repository.save(project);
+        projectRepository.save(project);
     }
 
     @Transactional
@@ -68,23 +74,34 @@ public class ProjectService {
         if (!alreadyAdded) {
             project.getUsers().add(user);
         }
+
+        List<Availability> existingMarks = availabilityRepository.findAllByUser(user);
+
+        for (Availability mark : existingMarks) {
+            boolean exists = availabilityRepository.existsByProjectAndUserAndDate(project, user, mark.getDate());
+            if (!exists) {
+                availabilityRepository.save(new Availability(project, user, mark.getDate()));
+            }
+        }
     }
 
     @Transactional
     public void removeUser(Long projectId, Long userId) {
         Project project = getById(projectId);
+        User user = userRepository.findById(userId).get();
 
-        project.getUsers()
-                .removeIf(user -> user.getId().equals(userId));
+        availabilityRepository.deleteByProjectAndUser(project, user);
+
+        project.getUsers().removeIf(u -> u.getId().equals(userId));
     }
 
     @Transactional
     public void delete(Long id) {
-        if (repository.count() <= 1) {
+        if (projectRepository.count() <= 1) {
             return;
         }
 
-        repository.findById(id)
-                .ifPresent(repository::delete);
+        projectRepository.findById(id)
+                .ifPresent(projectRepository::delete);
     }
 }
