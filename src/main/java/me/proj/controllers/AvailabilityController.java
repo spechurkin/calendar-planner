@@ -71,6 +71,6 @@ public class AvailabilityController {
         log.info("CSRF Header: {}", request.getHeader("X-XSRF-TOKEN"));
 
         authorizationService.requireOwnProjectTimeline(projectId, userId);
-        availabilityService.toggleBusy(projectId, userId, date);
+        availabilityService.toggleBusy(userId, date);
     }
 }
