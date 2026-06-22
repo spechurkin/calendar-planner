@@ -101,38 +101,20 @@ public class AvailabilityService {
     }
 
     @Transactional
-    public void toggleBusy(Long projectId, Long userId, LocalDate date) {
-        log.info("=== TOGGLE START === projectId={}, userId={}, date={}", projectId, userId, date);
+    public void toggleBusy(Long userId, LocalDate date) {
+        User user = userService.getById(userId);
+        List<Project> userProjects = user.getProjects();
 
-        try {
-            Project project = projectService.getById(projectId);
-            User user = userService.getById(userId);
+        log.info("Toggling busy for user {} on {} across {} projects", userId, date, userProjects.size());
 
-            if (project == null || user == null) {
-                log.error("Project or user not found");
-                return;
-            }
-
-            requireProjectMember(user, project);
-
+        for (Project project : userProjects) {
             Optional<Availability> existing = repository.findByProjectAndUserAndDate(project, user, date);
 
             if (existing.isPresent()) {
-                log.info("Deleting BUSY record id={}", existing.get().getId());
                 repository.delete(existing.get());
             } else {
-                Availability avail = new Availability();
-                avail.setProject(project);
-                avail.setUser(user);
-                avail.setDate(date);
-                avail.setStatus(AvailabilityStatus.BUSY);
-                repository.save(avail);
-                log.info("Created new BUSY record");
+                repository.save(new Availability(project, user, date));
             }
-            log.info("=== TOGGLE SUCCESS ===");
-        } catch (Exception e) {
-            log.error("Toggle failed", e);
-            throw e; // чтобы увидеть ошибку в ответе
         }
     }
 

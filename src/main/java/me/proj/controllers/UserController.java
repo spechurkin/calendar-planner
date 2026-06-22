@@ -66,7 +66,7 @@ public class UserController {
             RedirectAttributes redirectAttributes
     ) {
         User currentUser = currentUserService.requireCurrentUser();
-        service.joinProject(currentUser.getId(), projectId);
+        service.addToProject(projectId, currentUser.getId());
         redirectAttributes.addAttribute("projectId", projectId);
         return "redirect:/";
     }

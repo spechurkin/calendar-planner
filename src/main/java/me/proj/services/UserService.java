@@ -137,12 +137,14 @@ public class UserService {
     }
 
     @Transactional
-    public void joinProject(Long userId, Long projectId) {
-        projectService.addUser(projectId, userId);
-    }
-
-    @Transactional
     public void addToProject(Long projectId, Long userId) {
+        Project project = projectService.getById(projectId);
+        User user = getByProjectAndId(projectId, userId);
+
+        availabilityRepository.saveAll(
+                availabilityRepository.findAllByProjectAndUser(project, user)
+        );
+
         projectService.addUser(projectId, userId);
     }
 
