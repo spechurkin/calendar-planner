@@ -1,5 +1,5 @@
 # 📅 Calendar Planner
-## 🇺🇸 English version
+## 🇬🇧 English version
 
 ### About the Project
 
